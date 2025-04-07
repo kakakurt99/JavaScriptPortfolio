@@ -2,8 +2,6 @@ const gameState = {
     score: 0,
     timer: 0,
 }; 
-const canvasHeight = 500; //canvas height in pixels 
-const canvasWidth = 800; //canvas width in pixels 
 
 class GameScene extends Phaser.Scene {  
 
@@ -25,6 +23,12 @@ constructor(){
     this.load.image('spacebg10', 'assets/background/spacebganimated/spacebg (10).png');
     //this.load.image('spacebg11', 'assets/background/spacebganimated/spacebg (11).png');
     
+
+
+    this.load.image('bg1', 'assets/background/bg1.png');
+    this.load.image('bg2', 'assets/background/bg2.png');
+    this.load.image('bg3', 'assets/background/bg3.png');
+
     
     this.load.image('enemy1', 'assets/enemies/enemy1.png');
     this.load.image('block1', 'assets/characters/block1.png');
@@ -40,86 +44,18 @@ constructor(){
 }
 
  create(){
-this.anims.create({
-    key: 'backgroundAnim',
-    frames: [
-        { key: 'spacebg1'},
-        { key: 'spacebg2'},
-        { key: 'spacebg3'},
-        { key: 'spacebg4'},
-        { key: 'spacebg5'},
-        { key: 'spacebg6'},
-        { key: 'spacebg7'},
-        { key: 'spacebg8'},
-        { key: 'spacebg9'},
-        { key: 'spacebg10'}
-        //{ key: 'spacebg11'}
 
-    ],
-    frameRate: 5, //adjust framerate
-    repeat: -1 //loop the animation
-})
+//this.playerScore();
+this.createPlayer();
+this.createParallaxBackgrounds();
+this.playerCamera();
 
 
- //gameState.background1 =  this.add.image(0, 0, 'background1').setOrigin(0, 0); 
-//gameState.background1.displayWidth = config.width;
-//gameState.background1.displayHeight = config.height;
-
-//gameState.background2 = this.add.image(0, 0, 'background2').setOrigin(0, 0); 
-//gameState.background2.displayWidth = config.width;
-//gameState.background2.displayHeight = config.height;
-
-gameState.background3 = this.add.image(0, 0, 'spacebg').setOrigin(0,0);
-gameState.background3.displayWidth = config.width;
-gameState.background3.displayHeight = config.height;
-
-const background = this.add.sprite(config.width / 2, config.height / 2, 'spacebg1');
-background.play('backgroundAnim');
-
-// Initially, show only the first background
-//gameState.background2.setVisible(false);
-//gameState.background1.setVisible(false);
-
-    
-    gameState.enemy1 = this.physics.add.image(-50, canvasHeight-50, 'enemy1');
-    gameState.enemy1.setScale(.1); //change the size of the image
-
-     
-    // Define the animation
-        gameState.player = this.physics.add.sprite(100, 100, 'player');
-    
-        gameState.player.setScale(1.5);
-        gameState.player.setCollideWorldBounds(true);
-
-        this.anims.create({
-            key: 'running',
-            frames: this.anims.generateFrameNames('player',{ start: 1, end: 3}),
-            frameRate: 12,
-            repeat: -1
-        });
-
-        
-
-        this.anims.create({
-            key: 'jump',
-            frames: [ {key: 'player', frame: 4 },
-            {key: 'player', frame: 5},
-            {key: 'player', frame: 6, duration: 600},
-            {key: 'player', frame: 7 },
-            {key: 'player', frame: 8 },
-            {key: 'player', frame: 9 },
-            {key: 'player', frame: 10 },
-            {key: 'player', frame: 11 }
-            ],
-            frameRate: 12,
-            repeat: 0
-        });
-
-    gameState.player.play('running');
+  
 
 
 
-    gameState.block1 = this.physics.add.image(-200, canvasHeight-50, 'block1');
+    gameState.block1 = this.physics.add.image(-200, config.height-50, 'block1');
     gameState.block1.setScale(.2); //change the size of the image
     gameState.block1.setImmovable(true); //set the block to be immovable
 
@@ -130,7 +66,7 @@ background.play('backgroundAnim');
 
     // Create a graphics object to draw the platform
     const graphics = this.add.graphics();
-    graphics.fillStyle(0x00ff00, 1); // Set the fill color to green
+    graphics.fillStyle(0x1BD1F1, 1); // Set the fill color to green
     graphics.fillRect(0, (config.height), config.width+500, 10); // Draw a rectangle (x, y, width, height)
 
     // Create a static physics body for the platform
@@ -173,8 +109,18 @@ background.play('backgroundAnim');
                 gameState.score = 0;
                 gameState.timer = 0;
                 backgroundMusic.stop();
-                this.scene.stop('GameScene');
-                this.scene.start('GameOverScene');  //stop the game and start the GameOverScene
+
+
+                //pause 
+                this.cameras.main.shake(240, .01, false);
+                //this.scene.stop('GameScene');
+                
+
+
+                //setTimeout(function(){
+               //     this.scene.start('GameOverScene');  //stop the game and start the GameOverScene
+               // }, 2000);
+                
             }
     });
     
@@ -202,37 +148,38 @@ background.play('backgroundAnim');
         callback:() =>{
             gameState.score += 1;
             gameState.scoreText.setText('SCORE: ' + gameState.score);
-            //console.log('SCORE: '+ gameState.score);
         },
         loop: true
         });
   
 
 
+//CREATE BOX FOR THE SCORE
+graphics.fillStyle(0xffffff, 1); //color of the box (black 05 transparency)
+graphics.fillRect(45, 165, 150, 25); //draw rect at x,y, width, height
+graphics.setDepth(0);
+
+
 
 
     //GAME TIMER
 
-gameState.gameTimer = this.add.text(100,150, '' + gameState.timer, { FontSize: '40px', fill: '#ffffff' });
+gameState.gameTimer = this.add.text(50, 170, '' + gameState.timer, { FontSize: '40px', fill: '#000000' });
+gameState.gameTimer.setDepth(1);
 
 this.time.addEvent({
     delay: 100,
     callback:() =>{
         gameState.timer += 1;
-        this.hideGameTimer();
-       // console.log('TIME: '+ gameState.timer);
+        console.log(gameState.timer);
+        gameState.gameTimer.setText('Score: ' + gameState.timer);
     },
     loop: true
     });
 
-
-    //enemies group
-    
+    //enemies group 
     gameState.enemies = this.physics.add.group();   //create a group for enemies
    
-    
-
-
     //COLLISIONS
     this.physics.add.collider(gameState.blocks, platform);
 
@@ -242,28 +189,34 @@ this.time.addEvent({
         gameState.score = 0;
         gameState.timer = 0;
 
-
-       // gameState.player.setTexture('playerDeath');
-        //gameState.player.play('playerExplode');
-
         backgroundMusic.stop();
         deathSFX.play();
-        //timer delay 
-       //play square explosion animation
+
         
-        this.scene.start('GameOverScene');  //stop the game and start the GameOverScene
+        this.cameras.main.shake(240, .01, false);
+        this.cameras.main.fadeOut(500);
 
+        //delay 
+        this.time.delayedCall(240, () => {
+            // This runs after 240ms (same duration as the shake)
+            // You can change this number if you want a delay after the shake ends
+          
+            console.log("Shake finished, now doing something else!");
+          
+            // For example, fade out the camera
+             
+             this.scene.stop();
+             this.scene.start('GameOverScene');
+          });
+        
+      //  this.scene.start('GameOverScene');  //stop the game and start the GameOverScene
 
-        gameState.player.on('animationcomplete', () => {
-            this.scene.stop('GameScene');
+     //   gameState.player.on('animationcomplete', () => {
+    //        this.scene.stop('GameScene');
 
-            //timer
-            //make sprite go up
-            //end scene
-
-            this.scene.start('GameOverScene');
-        });
-
+     //       this.scene.start('GameOverScene');
+     //   });
+//
 
     });
 
@@ -281,14 +234,6 @@ this.time.addEvent({
 
     const deathSFX = this.sound.add('deathSFX', { volume: 0.1, loop: false });
 
-    // Add a timed event to switch backgrounds every 5 seconds
-  /* this.time.addEvent({
-        delay: 1000,
-        callback: this.switchBackground,
-        callbackScope: this,
-        loop: true
-    });
-*/
     // Log the size of the image
     console.log('Image width:', gameState.player.displayWidth);
     console.log('Image height:', gameState.player.displayHeight);
@@ -301,7 +246,43 @@ this.time.addEvent({
     
 }
 
+createPlayer(){
+    gameState.enemy1 = this.physics.add.image(-50, config.height - 50, 'enemy1');
+    gameState.enemy1.setScale(.1); //change the size of the image
 
+     
+    // Define the animation
+        gameState.player = this.physics.add.sprite(100, 100, 'player');
+        gameState.player.setScale(1.5);
+        gameState.player.setCollideWorldBounds(true);
+        gameState.player.setDepth(3);
+
+        this.anims.create({
+            key: 'running',
+            frames: this.anims.generateFrameNames('player',{ start: 1, end: 3}),
+            frameRate: 12,
+            repeat: -1
+        });
+
+        
+
+        this.anims.create({
+            key: 'jump',
+            frames: [ {key: 'player', frame: 4 },
+            {key: 'player', frame: 5},
+            {key: 'player', frame: 6, duration: 600},
+            {key: 'player', frame: 7 },
+            {key: 'player', frame: 8 },
+            {key: 'player', frame: 9 },
+            {key: 'player', frame: 10 },
+            {key: 'player', frame: 11 }
+            ],
+            frameRate: 12,
+            repeat: 0
+        });
+
+    gameState.player.play('running');
+}
 
 spawnEnemiesBasedOnTimer(){
     if(gameState.timer > 0 && gameState.timer < 100){
@@ -451,13 +432,6 @@ hideGameTimer(){
 
     const jumpSpeed = -250; //set the jump speed to 400
 
-    /*if (gameState.cursors.left.isDown) {
-        gameState.square.setVelocityX(-160);
-    } else if (gameState.cursors.right.isDown) {
-        gameState.square.setVelocityX(160);
-    } else {
-        gameState.square.setVelocityX(0);
-    }*/
 
     if (gameState.cursors.up.isDown && gameState.isOnGround) {
         //if button is pushed then the square will jump at a velocity of 160
@@ -481,10 +455,94 @@ hideGameTimer(){
     if(gameState.isOnGround){
 
        gameState.player.play('running', true);
-       
    }
+
+    gameState.bg1.tilePositionX -= this.scrollSpeed * 0.1;
+    gameState.bg2.tilePositionX -= this.scrollSpeed * 0.3; // slower speed for parallax effect
+    gameState.bg3.tilePositionX -= this.scrollSpeed * 1;
 
 
 }
 
+playerScore(){
+     //TIMER FOR SCORE
+     gameState.playerScore = this.add.text(10,10, 'SCORE: ' + gameState.score, { 
+        FontSize: '40px', 
+        fill: '#000000',
+     }).setDepth(1);
+
+     this.time.addEvent({
+         delay: 100,
+         callback:() =>{
+             gameState.score += 1;
+             gameState.scoreText.setText('SCORE: ' + gameState.score);
+             console.log(gameState.score);
+         },
+         loop: true
+         });
+}
+
+incrementScore(){
+    this.playerScore += 1;
+}
+
+
+playerCamera(){
+        //CAMERA CODE    
+            this.cameras.main.setZoom(1.2); // Zoom in by a factor of 2
+            this.cameras.main.centerOn(340, 290);
+}
+
+
+createParallaxBackgrounds(){
+    this.scrollSpeed = -1.5; // negative for leftward scroll
+    gameState.bg1 = this.add.tileSprite(0, 0, config.width, config.height, 'bg1').setOrigin(0, 0);
+    gameState.bg2 = this.add.tileSprite(0, 0, config.width, config.height, 'bg2').setOrigin(0, 0);
+    gameState.bg3 = this.add.tileSprite(0, 0, config.width, config.height, 'bg3').setOrigin(0, 0);
+
+    gameState.bg1.setOrigin(0,0);
+    gameState.bg2.setOrigin(0,0);
+    gameState.bg3.setOrigin(0,0);
+
+    const game_width = parseFloat(gameState.bg3.getBounds().width)
+    gameState.width = game_width;
+    const window_width = config.width
+
+    const bg1_width = gameState.bg1.getBounds().width
+    const bg2_width = gameState.bg2.getBounds().width
+    const bg3_width = gameState.bg3.getBounds().width
+
+    // Set the scroll factor for bg1, bg2, and bg3 here!
+
+    //gameState.bg1.setScrollFactor((bg1_width - window_width) / (game_width - window_width));
+ 
+    //gameState.bg2.setScrollFactor((bg2_width - window_width) / (game_width - window_width));
+
+
+}
+
+
+
+
+
+
+/*
+
+if score 0-500 
+
+timer -> spawn enemy 200 secs
+
+
+else if score 501-1000
+
+timer -> spawn enemy 150 secs
+
+
+else if score 1001-1500 
+
+timer-> spawn enemy 100 secs
+
+
+
+*/
 }

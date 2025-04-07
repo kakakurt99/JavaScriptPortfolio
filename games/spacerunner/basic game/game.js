@@ -1,15 +1,15 @@
 
 const config = {
     type: Phaser.AUTO,
-    width: canvasWidth,
-    height: canvasHeight, //canvas height in pixels
+    width: 800,
+    height: 500, //canvas height in pixels
     backgroundColor: '#000000',
     
     
     physics: {
         default: 'arcade',
         arcade:{
-            gravity: {y: 450},  //set gravity to 0 to allow free movement.  
+            gravity:{y: 450},  //set gravity to 0 to allow free movement.  
             debug: false
         }
     },

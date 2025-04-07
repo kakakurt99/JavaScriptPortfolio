@@ -33,13 +33,13 @@ class StartScene extends Phaser.Scene{
         gameState.openingMusic.play({loop: true});
 
         // Add the background image
-        gameState.menu1 = this.add.image((canvasWidth/3 + 30), 150, 'menu1').setOrigin(0, 0);
+        gameState.menu1 = this.add.image((config.width/3 + 30), 150, 'menu1').setOrigin(0, 0);
         gameState.menu1.setScale(0.2);
 
-        gameState.menu2 =  this.add.image((canvasWidth/3 + 30), 200, 'menu2').setOrigin(0, 0);
+        gameState.menu2 =  this.add.image((config.width/3 + 30), 200, 'menu2').setOrigin(0, 0);
         gameState.menu2.setScale(0.2);
 
-        gameState.menuExit = this.add.image((canvasWidth/3 + 90), 250, 'menuExit').setOrigin(0, 0);
+        gameState.menuExit = this.add.image((config.width/3 + 90), 250, 'menuExit').setOrigin(0, 0);
         gameState.menuExit.setScale(0.2);
 
         gameState.arrow1 = this.add.image(250, 155, 'arrow1').setOrigin(0, 0);
@@ -127,8 +127,7 @@ class StartScene extends Phaser.Scene{
     }
 
     preload(){
-        this.load.image('background3', 'assets/background/start1.png' );
-        this.load.image('background4', 'assets/background/start2.png');
+
         this.load.image('rocket1', 'assets/characters/rocket1.png');
         this.load.image('rocket2', 'assets/characters/rocket2.png');
         this.load.image('rocket3', 'assets/characters/rocket3.png');
