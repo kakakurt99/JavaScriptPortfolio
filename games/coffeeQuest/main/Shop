@@ -1,0 +1,22 @@
+class Shop{
+    constructor(playerInventory){
+        this.itemsForSale = [];
+
+        this.playerInventory = playerInventory;
+        this.playerMoney = 100; 
+    }
+
+//display items for sale 
+
+displayItemsForSale(){
+    console.log("Items available for sale:");
+    this.itemsForSale.forEach(item => {
+        console.log(`${item.name} - Price: ${item.price} - Quantity: ${item.quantity}`);
+    })
+}
+
+
+
+
+
+}

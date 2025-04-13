@@ -1,0 +1,85 @@
+NEXT:
+
+make the plant image change at different growth stages - DONE
+
+allow the player to interact with the plant and harvest the crop - DONE
+
+figure out dimensions of canvas/character/plant - DONE
+
+create inventory gui for the player - inventory gui done
+
+
+
+
+fix inventory to camera - DONE
+
+fix inventory altogether - DONE.
+
+draw new player sprite - DONE
+
+
+create player class - YANG
+
+
+------------------------------------- 11/04/2025 ---------------------------------------
+
+PRELOAD IMAGES - done.
+
+ADD IMAGES TO INVENTORY GUI. - DONE
+
+
+CREATE INSTANCE OF IMAGE IN INVENTORY. DONE
+
+ADD IMAGEKEY TO CREATEGUI METHOD. DONE
+
+
+WHEN PLAYER INTERACTS WITH FULLY GROWN PLANT - DONE
+
+PLANT IMAGE RESETS BACK TO FRAME 0 - DONE
+
+PLAYER INVENTORY WILL UPDATE TO HAVE A COFFEE BEAN IN IT. - DONE
+
+PLAYER MOVEMENT ANIMATIONS TOO! - YANG
+
+---------------------------------- 12/04/2025 --------------------------------------------
+
+CREATED BUILDING LAYER + ADDED TARAS SHOP TO GAME
+
+CURRENT: MOVEMENT ANIMATION FOR CHARACTER SPRITE.
+
+CONNECT SEED DATABASE INFO TO A SHOP.
+
+PLAYER MOVEMENT ANIMATIONS
+
+SHOP TO BUY SEEDS FROM 
+
+SHOP TO SELL SEEDS TO 
+
+INVENTORY SELECTION 
+
+COIN POUCH
+-------------------------------------- 13/04/2025 --------------------------------------
+story idea
+
+son&father own a coffee store. 
+Play as the son.
+Father is on the quest for the rare coffee bean known as the wacky backy bean.
+
+--could add construction element
+
+user starts as a teenage helping his dad grow coffee
+Dad sells them at the coffee stall
+
+upgrades?
+work your way to having an automated coffee farm 
+working on the coffee stand too 
+
+CURRENT TASK:
+
+-LOAD SIGNPOST INTO GAME
+-CREATE INVENTORY SLOTS BACKGROUND
+-COLLISION FOR BUILDING
+-MAKE GOLD TO PLAYER
+-MAKE GUI FOR GOLD?
+-INTERACT WITH SHOP TO BUY SEEDS.
+
