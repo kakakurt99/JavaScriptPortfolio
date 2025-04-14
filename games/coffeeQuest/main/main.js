@@ -2,6 +2,8 @@ import Item from './Item.js';
 import Plants from './plants.js';
 import inventory from './inventory.js';
 import GameMap from './GameMap.js';
+import Dialogue from './Dialogue.js';
+
 
 
 const gameState = {
@@ -44,12 +46,20 @@ interactables = [];
 
 async preload(){
 
-this.load.image("tilesAKey", "../assets/map/tilesA.png");
-this.load.image("taraHouseKey", "../assets/map/house1.png");
-this.load.image("slotImage", "../assets/invSlot2.png");
-this.load.image("extrasKey", "../assets/map/signpost1.png");
-this.load.tilemapTiledJSON('forestMap', '../assets/map/coffeeQuest.json');
+this.load.image("house1", "../assets/map/house1.png");
+this.load.image("groundtiles", "../assets/map/groundtiles.png");
+this.load.tilemapTiledJSON("worldMap", "../assets/map/mapNew.json");
 
+
+this.load.spritesheet('charSheet', '../assets/fonts/monogram/bitmap/monogram-bitmap.png', {
+    frameWidth: 6,
+    frameHeight: 12,
+});
+
+
+this.load.json('charMap', '../assets/fonts/monogram/bitmap/monogram-bitmap.json')
+this.load.image("slotImage", "../assets/invSlot.png");
+this.load.image("inventoryBox", "../assets/inventoryBG.png");
 
 this.load.image('coffeeseed', '../assets/coffeeSeed.png', { frameWidth: 16, frameHeight: 16});
 this.load.image('coffeebean', '../assets/coffeebean.png', { frameWidth: 16, frameHeight: 16});
@@ -57,7 +67,6 @@ this.load.spritesheet("plant", "../assets/coffeeplant1.png", { frameWidth: 16, f
 this.load.spritesheet("playerSprite", "../assets/newnpc.png", {
     frameWidth: 32,
     frameHeight: 32
-
 });
 }
 
@@ -73,23 +82,21 @@ if(this.crops){
 }
 
 //create the map object and pass the keys to the GameMap constructor
-this.myMap = new GameMap(this, 'forestMap', [
-    { nameInTiled: 'tilesA', keyInPhaser: 'tilesAKey' },
-    { nameInTiled: 'house1', keyInPhaser: 'taraHouseKey' },
-    { nameInTiled: 'extras', keyInPhaser: 'extrasKey' }
-]);
+this.load.image("test", "../assets/coffeeplant1.png");
 
-
+this.myMap = new GameMap(this, "worldMap", "house1", "groundtiles");
 
 //this.add.image(100, 580, "slotImage").setScale(1);
 this.createPlayer();
+console.log("Player created at:", this.player.x, this.player.y);
 this.createPlant();
-console.log("this: " + this.myMap);
 
+//get json char map
+this.charMap = this.cache.json.get('charMap');
 
 
 //create inventory GUI on start
-this.myInventory = new inventory(this, "slotImage");
+this.myInventory = new inventory(this, "slotImage", "inventoryBox");
 this.myInventory.createInventoryGUI(this);
 
 //camera on player
@@ -128,13 +135,10 @@ this.input.keyboard.on('keydown-I', () => {
     this.newPlant = new Plants("Coffee Plant", seedItem, 500, 0);
     this.newPlant.assignSprite(this.plant);
 
+// Enable collision between the player and the buildings
+this.physics.add.collider(this.player, this.myMap.buildinglayer);
 
-    const house = this.physics.add.staticGroup();
-        house.create(200, 300, 'taraHouseKey'); // Position and texture of the object
 
-        this.physics.add.collider(this.player, house, () => {
-    console.log("Collision with house detected!");
-});
 
 }
 
@@ -211,10 +215,10 @@ update(){
 createPlayer(){
     
     
-    const spawnPoint = this.myMap.getSpawnPoint('PlayerSpawn');
+    const spawnPoint = this.myMap.getSpawnPoint('playerSpawn');
     this.player = this.physics.add.sprite(spawnPoint.x, spawnPoint.y, "playerSprite");
     this.player.setScale(1.5);
-    this.player.setSize(50,50);
+    this.player.setSize(15,15);
     this.player.setDepth(1);
     
     this.anims.create({
@@ -278,7 +282,7 @@ createPlayer(){
 }
 
 createPlant(){
-    this.plant = this.physics.add.sprite(530, 90, 'plant', 0); //plant will start at frame 0.
+    this.plant = this.physics.add.sprite(930, 140, 'plant', 0); //plant will start at frame 0.
     this.plant.setScale(1.5);
     this.plant.setSize(20,10);
     this.plant.setOffset(-1,20);

@@ -1,17 +1,21 @@
+import Dialogue from './Dialogue.js';
+
 const maxInventory = 10; 
 
 
 class inventory {
 
 
-    constructor(scene, slotImage){
+    constructor(scene, slotImage, inventoryBox){
             this.inventoryItems = [];
             this.scene = scene;
             this.slotImage = slotImage;
+            this.inventoryBox = inventoryBox;
             this.slotDisplayObjects = [];
             this.itemDisplayObjects = []; // Store item image objects
             this.itemNameDisplayObjects =[]; //store item names as objects
             this.itemAmountDisplayObjects = [];
+            this.drawChars = [];
 
 
     }
@@ -68,18 +72,28 @@ console.log("this happens...");
 
     createInventoryGUI(scene){
 
+
+        this.dialogueFont = new Dialogue(this.scene, 'charSheet');
+       
+
+
         if(!scene){
             console.error("scene is currently undefined.");
             return;
         }
         const xPos = 200; // x position of first slot
         const yPos = 490; //y position of the bar
-        const padding = 0; //space between each slot
+        const padding = -19; //space between each slot
         const slotSize = 64; //size of each inventory slot
 
         let numberOfSlots = 6;
         let slotsInRow = 6;
-      
+
+
+
+        let inventoryBoxImage = scene.add.image(xPos + 130, yPos, this.inventoryBox);
+        inventoryBoxImage.setScrollFactor(0);
+        inventoryBoxImage.setVisible(false);
 
         //create empty slots only once.
         if(this.slotDisplayObjects.length === 0){
@@ -89,6 +103,7 @@ console.log("this happens...");
                 
                 itemSlot.setScale(0.7); // Scale down the slot image if needed
                 itemSlot.setScrollFactor(0); // Fix images to screen
+                itemSlot.setDepth(0);
                 this.slotDisplayObjects.push(itemSlot); // Save the slot reference
         }
     }
@@ -100,19 +115,23 @@ console.log("this happens...");
             let itemSlot = this.slotDisplayObjects[index];
             if (itemSlot) {
                 let itemDisplay = scene.add.image(itemSlot.x, itemSlot.y, item.imageKey)
-                    .setScale(1.2) // Scale down the item image if needed
+                    .setScale(0.7) // Scale down the item image if needed
                     .setScrollFactor(0); // Fix images to screen
                this.itemDisplayObjects.push(itemDisplay); // Store the item display object
             
-                let itemNameText = scene.add.text(itemSlot.x - 40, itemSlot.y - 50, item.name);
-                itemNameText.setColor('#000000');
-                itemNameText.setScrollFactor(0);
+                //let itemNameText = scene.add.text(itemSlot.x - 40, itemSlot.y - 50, item.name);
+                
+                this.dialogueFont.clearText();
+                let itemNameText = this.dialogueFont.drawText(item.name, itemSlot.x - 30, itemSlot.y - 40);
+
+                //itemNameText.setColor('#000000');
+                //itemNameText.setScrollFactor(0);
                 this.itemNameDisplayObjects.push(itemNameText);
 
 
                 let itemAmountText = scene.add.text(itemSlot.x + 13, itemSlot.y + 7, "x" + item.amount);
  
-                itemAmountText.setStyle({font: '10px Arial', color: '#000000'});
+                itemAmountText.setStyle({font: '10px', color: '#000000'});
                 itemAmountText.setScrollFactor(0);
                 this.itemAmountDisplayObjects.push(itemAmountText);
             }
@@ -124,17 +143,18 @@ console.log("this happens...");
       
         //clear previous item images
         this.itemDisplayObjects.forEach(itemDisplay => {
-            itemDisplay.destroy(); // Destroy only item images
-
+           if(itemDisplay) itemDisplay.destroy(); // Destroy only item images
         });
+
         //clear previous item name text
         this.itemNameDisplayObjects.forEach(itemNameText => {
-            itemNameText.destroy(); // Destroy only item images
-   
+            if(itemNameText) itemNameText.destroy(); // Destroy only item images
+            this.dialogueFont.clearText();
         });
+
         //clear previous item amount number
         this.itemAmountDisplayObjects.forEach(itemAmountText => {
-            itemAmountText.destroy(); // Destroy only item images
+           if(itemAmountText) itemAmountText.destroy(); // Destroy only item images
    
         });
         this.itemDisplayObjects = []; // Reset the array of item images
@@ -158,7 +178,10 @@ console.log("this happens...");
     }
 
 
-    
+
+    showSeedText() {
+    this.dialogueFont.drawText("coffee seed", 850, 380);
+}
 
 
 }
