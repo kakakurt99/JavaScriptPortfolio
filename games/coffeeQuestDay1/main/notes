@@ -1,0 +1,21 @@
+NEXT:
+
+make the plant image change at different growth stages - DONE
+
+allow the player to interact with the plant and harvest the crop - YANG
+
+figure out dimensions of canvas/character/plant - DONE
+
+create inventory gui for the player - inventory gui done
+
+
+
+
+fix inventory to camera - DONE
+
+fix inventory altogether - IN PROGRESS.
+
+draw new player sprite - YANG
+
+
+create player class - YANG

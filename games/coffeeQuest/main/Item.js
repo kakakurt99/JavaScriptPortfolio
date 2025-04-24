@@ -3,7 +3,6 @@ import inventory from './inventory.js';
 class Item {
 
 constructor(name, type, quality, amount, value, imageKey){
-
     this.name = name;
     this.type = type; 
     this.quality = quality;
@@ -11,8 +10,6 @@ constructor(name, type, quality, amount, value, imageKey){
     this.amount = amount; 
     this.imageKey = imageKey;
     this.MAX_BEANS = 10;
-
-
 }
 
 /*plantBeans(){

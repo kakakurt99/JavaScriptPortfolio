@@ -1,11 +1,9 @@
-import inventory from './inventory.js';
+import gameState from './gameState.js';
 
-let myInventory = new inventory();
 
 class Plants {
-    constructor(name, bean, growthTime, growthStage = 0, maxGrowthStage = 5, sprite = null){
+    constructor(name, growthTime, growthStage = 0, maxGrowthStage = 50, sprite = null){
         this.name = name;
-        this.bean = bean;
         this.growthTime = growthTime; //time for seed to grow
         this.growthStage = growthStage; //initial stage
         this.maxGrowthStage = maxGrowthStage; //e.g. 3 growth stages
@@ -24,7 +22,7 @@ startGrowth(){
             
                 this.sprite.setFrame(this.growthStage);
             
-            //console.log(`${this.name} has reached growth stage ${this.growthStage}!`);
+            console.log(`${this.name} has reached growth stage ${this.growthStage}!`);
         } else{
             clearInterval(interval);
             console.log(`${this.name} is fully grown!`);
@@ -47,3 +45,41 @@ harvestCrop(){
 export default Plants;
 
 
+/*
+
+plant ideas
+
+--basic pot --
+-> can put compost in
+-> can put seeds in, if it has compost
+-> can grow into small size coffee plant
+
+--> small plant = 3 beans every 3 days
+
+--> medium pot
+--> same as basic
+--> can grow into medium size coffee plant
+
+--> medium plant = 5 beans every 3 days
+
+
+
+--> large pot
+--> can grow into coffee bean tree
+
+--> large plant = 8 beans every 3 days
+
+
+
+
+
+----> large pot can be planted as a tree
+
+----> tree produces 10 beans every 2 days 
+
+
+
+
+
+
+*/

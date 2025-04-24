@@ -17,11 +17,16 @@ const config = {
         default: "arcade",
         arcade: {
             gravity: { y: 0 },
-            debug: true
+            debug: false
         }
     },
 
     scene: [main],
+    input: {
+        mouse: {
+            target: window 
+        }
+    }
     };
 
     const game = new Phaser.Game(config);

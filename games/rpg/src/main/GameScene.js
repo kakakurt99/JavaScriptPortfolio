@@ -16,6 +16,9 @@ class GameScene extends Phaser.Scene{
         super({key: 'GameScene'});
     }
 
+
+
+
     preload(){
         this.load.image("tiles", "games/rpg/src/assets/map/tilesA.png");
         this.load.image("tilesBuilding", "games/rpg/src/assets/map/buildings.png");
@@ -38,6 +41,8 @@ class GameScene extends Phaser.Scene{
 
     create(){
 
+        
+
         gameState.hero = new Character('Aeon');
 
         this.inventory = this.scene.get('inventory');
@@ -58,10 +63,12 @@ class GameScene extends Phaser.Scene{
         this.scene.launch('inventory');
         
         this.physics.add.overlap(this.player, this.bodwin, function() {       
-
             gameState.nearBodwin = true;            
-
         });
+
+        
+
+
 
 
         this.input.keyboard.on('keydown-D', () => {
@@ -139,12 +146,13 @@ class GameScene extends Phaser.Scene{
                     this.player.setInteractive();  
 
                     //CREATE SWORD IMAGE AND POSITION IT RELATIVE TO PLAYER
-                    this.sword = this.add.image(this.player.x, this.player.y - 10, "sword");
-                    this.sword.setOrigin(0.5, 0.5);
+                    this.sword = this.physics.add.image(this.player.x, this.player.y - 10, "sword");
+                    this.sword.setSize(20,20);
+                    this.sword.setOrigin(0.5,1);
                     this.sword.setDepth(2);
                     this.sword.setScale(0.5);
+                    
 
-                  // this.playerContainer = this.add.container(obj.x, obj.y, [this.player, this.sword]);
 
                 }            
             })

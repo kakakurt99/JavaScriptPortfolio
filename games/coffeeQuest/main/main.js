@@ -2,20 +2,15 @@ import Item from './Item.js';
 import Plants from './plants.js';
 import inventory from './inventory.js';
 import GameMap from './GameMap.js';
+import Player from './Player.js';
+import gameState from './gameState.js';
 import Dialogue from './Dialogue.js';
+import Shop from './Shop.js';
 
 
 
-const gameState = {
-    playerX: 320,
-    playerY: 300,
-    attacking: false,
-    nearPlant: false,
-    plantFrame: 1
-}
 
 let myPlants = new Plants();
-//let myInventory = new inventory();
 let myItems = new Item();
 
 let seedItem = {
@@ -38,73 +33,80 @@ let coffeeBean = {
 };
 
 class main extends Phaser.Scene{   
-interactables = [];
+    
     constructor(){
-        super({key: 'main'});
-        this.myInventory = new inventory();
-    }
+            super({key: 'main'});
+            this.isShopOpen = false;
+        }
 
 async preload(){
 
 this.load.image("house1", "../assets/map/house1.png");
 this.load.image("groundtiles", "../assets/map/groundtiles.png");
+this.load.image("plants&pots", "../assets/map/plants&pots.png");
 this.load.tilemapTiledJSON("worldMap", "../assets/map/mapNew.json");
-
 
 this.load.spritesheet('charSheet', '../assets/fonts/monogram/bitmap/monogram-bitmap.png', {
     frameWidth: 6,
     frameHeight: 12,
 });
 
-
 this.load.json('charMap', '../assets/fonts/monogram/bitmap/monogram-bitmap.json')
 this.load.image("slotImage", "../assets/invSlot.png");
 this.load.image("inventoryBox", "../assets/inventoryBG.png");
+this.load.spritesheet('shopItems', '../assets/coffeebags.png', { frameWidth: 32, frameHeight: 32});
+this.load.spritesheet('potItems', '../assets/basicpot.png', {frameWidth: 16, frameHeight: 16});
+this.load.spritesheet('coffeecups', '../assets/coffeecup1.png', {frameWidth: 32, frameHeight: 32});
+
+this.load.image("compostItems", "../assets/compostbag.png");
 
 this.load.image('coffeeseed', '../assets/coffeeSeed.png', { frameWidth: 16, frameHeight: 16});
 this.load.image('coffeebean', '../assets/coffeebean.png', { frameWidth: 16, frameHeight: 16});
-this.load.spritesheet("plant", "../assets/coffeeplant1.png", { frameWidth: 16, frameHeight: 32});
+this.load.spritesheet("plantStages", "../assets/basicplantstages.png", { frameWidth: 32, frameHeight: 32});
 this.load.spritesheet("playerSprite", "../assets/newnpc.png", {
     frameWidth: 32,
     frameHeight: 32
 });
-}
 
+}
 async create(){
-//create and load crops from database
-await this.loadCropData(); //wait until crops data has loaded
+    //camera on player
+const cam = this.cameras.main;
+gameState.centerX = cam.centerX;
+gameState.centerY = cam.centerY;
 
-//when crop data is available, continue scene setup
-if(this.crops){
-    console.log('crops are ready:', this.crops);
-} else {
-    console.log("failed to load crops data.");
-}
+this.myMap = new GameMap(this, "worldMap", "house1", "plants&pots", "groundtiles");
+this.potDataMap = new Map(); // Key: `${x},${y}` -> Value: pot object
 
-//create the map object and pass the keys to the GameMap constructor
-this.load.image("test", "../assets/coffeeplant1.png");
-
-this.myMap = new GameMap(this, "worldMap", "house1", "groundtiles");
-
-//this.add.image(100, 580, "slotImage").setScale(1);
-this.createPlayer();
-console.log("Player created at:", this.player.x, this.player.y);
-this.createPlant();
-
-//get json char map
-this.charMap = this.cache.json.get('charMap');
-
+//this.createPlant();
+//get spawnpoint from GameMap after it's created.
+const spawnPoint = this.myMap.getSpawnPoint("playerSpawn");
 
 //create inventory GUI on start
-this.myInventory = new inventory(this, "slotImage", "inventoryBox");
-this.myInventory.createInventoryGUI(this);
+this.myInventory = new inventory(this, "slotImage", "inventoryBox", "shopItems");
+gameState.playerInventory = this.myInventory;
 
-//camera on player
-this.cameras.main.startFollow(this.player);
+ // Reference to the shop class
+ this.shop = new Shop(this);
+await this.shop.loadShopData();
+
+
+this.player = new Player(this, 'playerSprite', this.plant, spawnPoint);
+this.physics.add.existing(this.player);
+
+this.myMap.createCollisionObjects();
+
+this.myInventory.createInventoryGUI(this);
+this.myInventory.enableInventoryControls(); 
+this.myInventory.createMoneyPouchGUI(this);
+
+this.cameras.main.startFollow(this.player.player);
 this.cameras.main.setBounds(0,0, this.myMap.widthInPixels, this.myMap.heightInPixels);
 this.cameras.main.setZoom(1.5);
 this.cameras.main.roundPixels = true;
 
+
+this.physics.world.setBounds(0, 0, this.myMap.map.widthInPixels, this.myMap.map.HeightInPixels);
 
 //Create the cursor keys object
 this.cursors = this.input.keyboard.createCursorKeys();
@@ -117,202 +119,264 @@ this.input.keyboard.on('keydown-SPACE', () => {
     }
 });
 
-this.input.keyboard.on('keydown-E', () => {
-    this.myInventory.addItem(seedItem);
-
-    const index = this.myInventory.inventoryItems.indexOf(seedItem);
- //   console.log(index);
- //   console.log(this.myInventory);
-})
-
-
 this.input.keyboard.on('keydown-I', () => {
     this.myInventory.listItems();
+    console.log("money:", this.player.getCurrency());
+    this.findUniqueTileIndex();
+
+
+})
+
+this.input.keyboard.on('keydown-M', () => {
+    this.player.addCurrency(10);
+    this.myInventory.updateMoneyGUI(this);
+
 })
 
 
-//create the plant instance with a growth time. 
-    this.newPlant = new Plants("Coffee Plant", seedItem, 500, 0);
-    this.newPlant.assignSprite(this.plant);
+
+this.input.keyboard.on('keydown-F', () => {
+    console.log("playerInventory:", gameState.playerInventory);
+    this.fillCupAction();
+})
+
+this.input.keyboard.on('keydown-ESC', () => {
+    this.shop.closeShop();
+    this.spacePressedListener = false; //reset flag 
+
+})
+
+ // Initialize the flag to track whether the shop is open
+ this.isShopOpen = false;
 
 // Enable collision between the player and the buildings
-this.physics.add.collider(this.player, this.myMap.buildinglayer);
+this.physics.add.collider(this.player.player, this.myMap.buildinglayer);
+this.physics.add.collider(this.player.player, this.myMap.groundlayer);
+
+this.physics.add.overlap(
+    this.player.player, 
+    this.myMap.namedZones.seedShop, 
+    this.handleOverlapPlayerSeedShop, // <-- this is where the overlap is detected
+    null, // <-- leave this as `null` unless you need fine-tuned overlap filtering
+    this
+);
 
 
+this.tryPlacePotOnClick();
+//this.tryRemovePotOnClick();
+
+this.putCompostInPot();
+this.plantSeedInPot();
+this.waterPlantWithBucket();
+this.fillCupAction();
 
 }
 
 update(){
 
-    if (this.player) {
-        // Reset velocity to 0 at the start of each frame
-        this.player.setVelocity(0);
+ if(this.player){
+    this.player.update();
 
-        // Check for movement input and set velocity accordingly
-        if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-200); // Move left
-            this.player.anims.play('moveLeft', true);
-            this.lookLeft = true;
-            this.lookRight = false;
-            this.lookUp = false;
-            this.lookDown = false;
-        } 
-        if (this.cursors.right.isDown) {
-            this.player.setVelocityX(200); // Move right
-            this.player.anims.play('moveRight', true);
-            this.lookRight = true;
-            this.lookLeft = false;
-            this.lookUp = false;
-            this.lookDown = false;
-        } 
-        if (this.cursors.up.isDown) {
-            this.player.setVelocityY(-200); // Move up
-            this.player.anims.play('moveUp', true);
-            this.lookUp = true;
-            this.lookDown = false;
-            this.lookRight = false;
-            this.lookLeft = false;
-        } 
 
-        if (this.cursors.down.isDown) {
-            this.player.setVelocityY(200); // Move down
-            this.player.anims.play('moveDown', true);
-            this.lookDown = true;
-            this.lookUp = false;
-            this.lookLeft = false;
-            this.lookRight = false;
-        }
-
-        // Stop animations if no movement keys are pressed
-        if (!this.cursors.left.isDown && !this.cursors.right.isDown && 
-            !this.cursors.up.isDown && !this.cursors.down.isDown) {
-            if (this.lookDown) {
-                this.player.anims.play('idle', true);
-            } else if (this.lookUp) {
-                this.player.anims.play('idleUp', true);
-            } else if (this.lookLeft) {
-                this.player.anims.play('lookLeftIdle', true);
-            } else if (this.lookRight) {
-                this.player.anims.play('lookRightIdle', true);
+        if (this.isOverlappingSeedShop) {
+            const playerBounds = this.player.player.getBounds();
+            const shopBounds = this.myMap.namedZones.seedShop.getBounds();
+        
+            if (!Phaser.Geom.Intersects.RectangleToRectangle(playerBounds, shopBounds)) {
+                this.isOverlappingSeedShop = false;
+                console.log("Exited Seed Shop");
+               // Reset listener flag after use
+                // Optional: close shop or handle exit logic
             }
         }
-           // Check if the player is overlapping with the plant in the update loop
-           if (this.physics.overlap(this.player, this.plant)) {
-            if (!gameState.nearPlant) {
-                gameState.nearPlant = true;
-                console.log("Player is near the plant");
+
+
+    }
+
+    if (this.tooltipText && this.tooltipText.visible) {
+        this.tooltipText.setPosition(this.scene.input.x + 10, this.scene.input.y - 20);
+    }
+ }
+
+tryPlacePotOnClick(){
+    this.input.on('pointerdown', (pointer) => {
+        const worldX = pointer.worldX;
+        const worldY = pointer.worldY;
+        const tileX = this.myMap.map.worldToTileX(worldX);
+        const tileY = this.myMap.map.worldToTileY(worldY);
+        const tileKey = `${tileX},${tileY}`;
+
+        const groundTile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.groundlayer);
+        const plantsTile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.plantslayer);
+
+   //     console.log("when click you have: " , this.myInventory.itemInSlot);
+   //     console.log("clicking at: " , worldX, worldY);
+
+        // Check if something is already there
+        if(plantsTile){
+            if(plantsTile.properties.exists){
+                console.log("You can't put something on this tile because it has a plant on.");
+                console.log("index: " + plantsTile.index);
+                return;
             }
-        } else {
-            if (gameState.nearPlant) {
-                gameState.nearPlant = false;
-                console.log("Player is no longer near the plant");
+        }
+
+        // If the tile is empty and we have a basic pot
+        if(!plantsTile && this.myInventory.itemInSlot?.name === 'basic pot'){
+            if(groundTile?.properties?.plantable){
+                console.log("Placing a basic pot.");
+                const tile = this.myMap.map.putTileAt(964, tileX, tileY, false, this.myMap.plantslayer);
+                this.basicpotprops = this.getTileProperties(tile);
+                
+                if (this.basicpotprops?.empty) {
+                    console.log("This tile is marked as empty!");
+                }
+
+                // Now link this tile to a new pot object
+                this.potDataMap.set(tileKey, {
+                    hasPot: true,
+                    hasCompost: false,
+                    seed: null,
+                    watered: false,
+                    growthStage: 0,
+                    growthTime: 0
+                });
+
+                console.log("Pot data added at", tileKey);
             }
+        }
+    });
+}
+
+putCompostInPot(){
+    this.input.on('pointerdown', (pointer) => {
+        const worldX = pointer.worldX;
+        const worldY = pointer.worldY;
+        const tileX = this.myMap.map.worldToTileX(worldX);
+        const tileY = this.myMap.map.worldToTileY(worldY);
+        
+        const groundTile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.groundlayer);
+        const plantsTile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.plantslayer);
+
+        if(plantsTile){
+            if(this.basicpotprops?.empty){
+                console.log("You can put something in here...");
+                console.log("index: " + plantsTile.index);
+                if(this.myInventory.itemInSlot && this.myInventory.itemInSlot.name === 'compost'){
+
+                    console.log("you put compost in da plant broski!");
+                    this.myMap.map.putTileAt(965, tileX, tileY, false, this.myMap.plantslayer);
+                    
+                    //update compost status in potdatamap
+
+                    const tileKey = `${tileX},${tileY}`;
+                    const pot = this.potDataMap.get(tileKey);
+
+                    if(pot){
+                        pot.hasCompost = true;
+                        this.potDataMap.set(tileKey, pot);
+                        console.log("Pot data updated: hasCompost = ", pot.hasCompost);
+                    } else {
+                        console.log("No pot data found for tilekey: ", tileKey);
+                    }
+
+
+
+
+
+
+
+                    this.potDataMap.hasCompost = true;
+
+                    console.log("Pot data added: hascompost", this.potDataMap.hasCompost);
+                }
+            } 
+        }
+    });
+
+}
+
+plantSeedInPot(){
+    this.input.on('pointerdown', (pointer) => {
+        const worldX = pointer.worldX;
+        const worldY = pointer.worldY;
+        const tileX = this.myMap.map.worldToTileX(worldX);
+        const tileY = this.myMap.map.worldToTileY(worldY);
+        
+        const tile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.plantslayer);
+        this.basicpotprops = this.getTileProperties(tile);
+        if(this.basicpotprops?.plantable && this.myInventory.itemInSlot.type === 'seed'){
+            console.log("you can plant a seed in here..");
+           // this.getInventoryItem();
+            //change frame to seed pot
+            //initiate growth stage 1 / timer.
+
+            this.myMap.map.putTileAt(966, tileX, tileY, false, this.myMap.plantslayer);
+
+            this.potDataMap.seed = this.myInventory.itemInSlot;
+
+            console.log("You planted a : ", this.potDataMap.seed);
+            console.log("The id for this plant is: ", this.potDataMap.seed.id);
+
+
+        }
+    });
+}
+
+waterPlantWithBucket(){
+    this.input.on('pointerdown', (pointer) => {
+        const worldX = pointer.worldX;
+        const worldY = pointer.worldY;
+        const tileX = this.myMap.map.worldToTileX(worldX);
+        const tileY = this.myMap.map.worldToTileY(worldY);
+        
+       // const plantSprite = this.add.sprite(worldX + map.tileWidth / 2, worldY + map.tileHeight /2, 'plantStages', 0);
+       //const seedInfo = this.shop.getSeedData();
+
+
+        const tile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.plantslayer);
+        this.basicpotprops = this.getTileProperties(tile);
+        if(this.basicpotprops?.sewed && this.myInventory.itemInSlot.contains === 'water'){
+            console.log("you can plant water this pot");
+           
+            this.myMap.map.putTileAt(967, tileX, tileY, false, this.myMap.plantslayer);
+            this.potDataMap.watered = true;    
+            
+            console.log("Your "+ this.potDataMap.seed.name + "plant will start to grow.");
+            console.log("The id for this seed is:" + this.potDataMap.seed.id);
+            this.startSeedGrowth(tileX, tileY, this.potDataMap.seed.id);
+            
+           // this.startPlantGrowth();
+
+        }
+    });
+}
+
+
+getTileProperties(tile) {
+    if (!tile) return null;
+
+    for (const tileset of this.myMap.map.tilesets) {
+        const firstGid = tileset.firstgid;
+        const lastGid = firstGid + tileset.total - 1;
+
+        if (tile.index >= firstGid && tile.index <= lastGid) {
+            const localIndex = tile.index - firstGid;
+            return tileset.tileProperties[localIndex] || null;
         }
     }
-    
+
+    return null;
 }
 
-createPlayer(){
-    
-    
-    const spawnPoint = this.myMap.getSpawnPoint('playerSpawn');
-    this.player = this.physics.add.sprite(spawnPoint.x, spawnPoint.y, "playerSprite");
-    this.player.setScale(1.5);
-    this.player.setSize(15,15);
-    this.player.setDepth(1);
-    
-    this.anims.create({
-        key: 'idle',
-        frames: this.anims.generateFrameNumbers('playerSprite', { start: 0, end: 0}),
-        frameRate: 10,
-        repeat: -1
-     });
+findUniqueTileIndex(){
 
-     this.anims.create({
-        key: 'idleUp',
-        frames: this.anims.generateFrameNumbers('playerSprite', { start: 8, end: 8}),
-        frameRate: 10,
-        repeat: -1
-     });
-
-     this.anims.create({
-        key: 'lookLeftIdle',
-        frames: this.anims.generateFrameNumbers('playerSprite', { start: 6, end: 6}),
-        frameRate: 10,
-        repeat: -1
-     });
-
-     this.anims.create({
-        key: 'lookRightIdle',
-        frames: this.anims.generateFrameNumbers('playerSprite', { start: 4, end: 4}),
-        frameRate: 10,
-        repeat: -1
-     });
-
-
-    this.anims.create({
-       key: 'moveRight',
-       frames: this.anims.generateFrameNumbers('playerSprite', { start: 4, end: 5}),
-       frameRate: 10,
-       repeat: -1
-    });
-
-    this.anims.create({
-        key: 'moveLeft',
-        frames: this.anims.generateFrameNumbers('playerSprite', { start: 6, end: 7}),
-        frameRate: 10,
-        repeat: -1
-     });
-
-     this.anims.create({
-        key: 'moveUp',
-        frames: this.anims.generateFrameNumbers('playerSprite', { start: 11, end: 12}),
-        frameRate: 10,
-        repeat: -1
-     });
-
-     this.anims.create({
-        key: 'moveDown',
-        frames: this.anims.generateFrameNumbers('playerSprite', { start: 1, end: 2}),
-        frameRate: 10,
-        repeat: -1
-     });
-
-
+    const tileset = this.myMap.map.tilesets.find(ts => ts.name === 'plants&pots');
+    console.log(tileset.firstgid);
 }
 
-createPlant(){
-    this.plant = this.physics.add.sprite(930, 140, 'plant', 0); //plant will start at frame 0.
-    this.plant.setScale(1.5);
-    this.plant.setSize(20,10);
-    this.plant.setOffset(-1,20);
-    
-}
-
-playerWeaponContainer(){
-    if(this.player){
-        this.playerContainer = this.add.container(50, 50, [this.player, this.sword]);
-        console.log("player weapon container successfully made");
-    }
-}
-
-setupInput(){
-    this.input.keyboard.on('keydown-Z', () =>{
-        if(!gameState.attacking){
-            console.log("pressing letter Z");
-            gameState.attacking = true;
-            //Trigger attack animation or logic
-        }
-    });
-
-    this.input.keyboard.on('keyup-Z', () =>{
-        gameState.attacking = false;
-        //optionally reset animation / state
-    });
-}
-
-plantSeedAction(){
-let seedItem = this.myInventory.inventoryItems.find(item => item.name === "coffee seed");
+startSeedGrowth(){
+let seedItem = this.myInventory.inventoryItems.find(item => item.type === "seed");
 
 if(seedItem){
     
@@ -326,11 +390,28 @@ if(seedItem){
     }
 }
 
+startSeedGrowth(tileX, tileY, seedId) {
+    const seedInfo = this.getSeedInfoById(seedId);
+    const worldX = tileX * this.map.tileWidth;
+    const worldY = tileY * this.map.tileHeight;
+  
+    const sprite = this.add.sprite(worldX + this.map.tileWidth / 2, worldY + this.map.tileHeight / 2, 'plantStage', 0);
+  
+    const plant = new Plants(
+      seedInfo.name,
+      seedInfo.growthTime,
+      0,
+      seedInfo.maxGrowthStage
+    );
+  
+    plant.assignSprite(sprite);
+    plant.startGrowth();
+  
+    const key = `${tileX},${tileY}`;
+    this.plantedCrops.set(key, plant);
+  }
 
 harvestPlantAction(){
-    //  if growthStage = maxGrowthStage -> inventory +1 coffee seed, plant frame = 0;
-    //console.log(this.newPlant.growthStage);
-
     if(this.newPlant.growthStage == this.newPlant.maxGrowthStage){
         console.log("plant finished growing.");
         //add item to inventory
@@ -343,29 +424,130 @@ harvestPlantAction(){
     }
 }
 
-async loadCropData() {
-    try {
-        const response = await fetch('http://localhost:3000/crops');
-        if (!response.ok) {
-            throw new Error('Failed to fetch crops data');
-        }
-        const crops = await response.json();
-        console.log('Loaded crops:', crops); // Log the entire crops array to inspect the structure
+pauseThisScene(){
+    this.scene.pause();
+}
 
-        // Check if crops data has the 'Arabica' crop
-        const arabicaCrop = crops.find(crop => crop.name === 'Arabica');
-        console.log('Arabica Crop:', arabicaCrop);  // Log the Arabica crop specifically
+resumeThisScene(){
+    this.scene.resume();
+}
 
-        if (arabicaCrop && arabicaCrop.seeds) {
-            console.log("Arabica Seeds:", arabicaCrop.seeds);  // This should now show the seed data
-        } else {
-            console.log("Arabica crop or seeds not found.");
-        }
-
-        this.crops = crops; // Save it for later use
-    } catch (error) {
-        console.error('Error loading crops:', error);
+toggleShop() {
+    if (this.isShopOpen) {
+        this.shop.closeShop();     // 👈 call method on the Shop instance
+        this.isShopOpen = false;
+        this.enablePlayerActions();  // Allow player actions (movement, interactions)
+        //this.scene.resume();       // 👈 resume your game scene
+    } else {
+        this.shop.openShop();      // 👈 call method on the Shop instance
+        this.isShopOpen = true;
+        //this.disablePlayerActions(); // Disable player actions (movement, interactions)
+       // this.scene.pause();        // 👈 pause your game scene
     }
+}
+
+fillCupAction(){
+    
+
+    this.input.on('pointerdown', (pointer) => {
+        const worldX = pointer.worldX;
+        const worldY = pointer.worldY;
+        const tileX = this.myMap.map.worldToTileX(worldX);
+        const tileY = this.myMap.map.worldToTileY(worldY);
+        const tileKey = `${tileX},${tileY}`;
+
+        const groundTile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.groundlayer);
+        const plantsTile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.plantslayer);
+
+        // If the tile is empty and we have a basic pot
+
+        console.log(groundTile?.properties);
+        console.log(plantsTile?.properties);
+
+
+if(this.myInventory.itemInSlot){
+
+    if(this.myInventory.itemInSlot?.name === 'coffee cup (empty)'){
+        if(groundTile?.properties?.watersource || plantsTile?.properties?.watersource){
+            console.log("Filling your cup with water...");
+          
+            this.myInventory.itemInSlot.contains = 'water';
+
+            console.log("itemInSlot.contains: " , this.myInventory.itemInSlot.contains);
+
+
+
+            const newItem = this.shop.getItem("coffee cup (water)");
+ 
+            this.myInventory.updateInventoryGUI(this);
+
+
+        }
+    }
+}
+        
+    });
+
+    //if(coffeeCup){
+    //    coffeeCup.contains = 'water';
+     //   this.myInventory.updateInventoryGUI(scene);
+    //}
+}
+
+emptyCupAction(){
+    let coffeeCup = this.myInventory.find(item => item.name.includes('coffee cup') && item.contains === 'water');
+
+    if(coffeeCup){
+        coffeeCup.contains = null;
+        this.myInventory.updateInventoryGUI(scene);
+    }
+}
+
+
+handleOverlapPlayerSeedShop() {
+    if (!this.isOverlappingSeedShop) {
+        this.isOverlappingSeedShop = true;
+        console.log("Entered Seed Shop");
+    }
+
+    this.input.keyboard.once('keydown-SPACE', () => {
+
+        this.spacePressedListener = true;
+
+        if(this.isOverlappingSeedShop && this.spacePressedListener){
+
+            gameState.gamePaused = true;
+            this.shop.openShop();
+
+        }
+        
+       
+    });
+    
+}
+
+getInventoryItem(item){
+    item = this.myInventory.itemInSlot.name;
+    console.log("In your hand you have: ", this.myInventory.itemInSlot);
+}
+
+
+
+
+getSeedInfoById(seedId){
+    
+this.seedData = this.shop.getItemData(seedId);
+
+if (!seedData) {
+    console.warn(`No seed data found for ID: ${seedId}`);
+    return null;
+  }
+
+  console.log("seed data:", seedData);
+  console.log("name of seed: ", seedData.name);
+
+  return seedData;
+
 }
 
 }

@@ -1,3 +1,4 @@
+import gameState from './gameState.js'
 import Dialogue from './Dialogue.js';
 
 const maxInventory = 10; 
@@ -6,42 +7,49 @@ const maxInventory = 10;
 class inventory {
 
 
-    constructor(scene, slotImage, inventoryBox){
-            this.inventoryItems = [];
+    constructor(scene, slotImage, inventoryBox, imageKey){
+            this.inventoryItems = gameState.playerInventory;
             this.scene = scene;
             this.slotImage = slotImage;
             this.inventoryBox = inventoryBox;
+            this.imageKey = imageKey;
+            this.selectedSlot = null;
             this.slotDisplayObjects = [];
             this.itemDisplayObjects = []; // Store item image objects
             this.itemNameDisplayObjects =[]; //store item names as objects
             this.itemAmountDisplayObjects = [];
             this.drawChars = [];
+            this.coinPouchGUIX = 730;
+            this.coinPouchGUIY = 140;
+            this.itemInSlot;
+            
 
-
+            this.dialogueFont = new Dialogue(this.scene, 'charSheet');
+            // ✅ CREATE TOOLTIP ON INIT, so it exists for event handlers
+            this.createToolTip(this.scene);
+            this.createSelectorImage();
     }
 
 
-    getItem(item){
-        return this.items.find(item => item.name === itemName);
+    getItem(itemName){
+        return this.inventoryItems.find(item => item.name === itemName);
     }
 
     //METHOD TO ADD ITEM TO INV
-    addItem(item){
-        if(item.amount === 0 ){          
-            item.amount++;
-            this.inventoryItems.push(item);
-            this.updateInventoryGUI(this.scene); //call to update after item is added
-            
-            console.log(`${item.name} has been added to the inventory`);
+    addItem(newItem) {
+        let existingItem = this.inventoryItems.find(item => item.name === newItem.name);
+    
+        if (existingItem) {
+            existingItem.amount++;
+            console.log(`${newItem.name} +1 - total amount: ${existingItem.amount}`);
+        } else {
+            newItem.amount = 1;
+            this.inventoryItems.push(newItem);
+            console.log(`${newItem.name} has been added to the inventory`);
         }
-        else {
-           if(item.amount >= 1) {
-            item.amount++;
-            this.updateInventoryGUI(this.scene); //call to update after item is added
-            console.log(`${item.name} + 1 - total amount: ${item.amount}`)
-           }
-        }
-            
+    
+        this.updateInventoryGUI(this.scene);
+        this.listItems();
     }
 
     removeItem(item){
@@ -70,13 +78,7 @@ console.log("this happens...");
         //this.inventoryItems = this.inventoryItems.filter(item => item.name !== "coffee seed"); 
     }
 
-    createInventoryGUI(scene){
-
-
-        this.dialogueFont = new Dialogue(this.scene, 'charSheet');
-       
-
-
+    createInventoryGUI(scene){   
         if(!scene){
             console.error("scene is currently undefined.");
             return;
@@ -89,80 +91,130 @@ console.log("this happens...");
         let numberOfSlots = 6;
         let slotsInRow = 6;
 
-
-
         let inventoryBoxImage = scene.add.image(xPos + 130, yPos, this.inventoryBox);
         inventoryBoxImage.setScrollFactor(0);
         inventoryBoxImage.setVisible(false);
 
+
         //create empty slots only once.
         if(this.slotDisplayObjects.length === 0){
             // Loop through and create empty inventory slots
+            //CREATE INVENTORY SLOTS ON THE SCREEN
             for (let i = 0; i < numberOfSlots; i++) {
                 let itemSlot = scene.add.image(xPos + (i % slotsInRow) * (slotSize + padding), yPos + Math.floor(i / slotsInRow) * (slotSize + padding), this.slotImage); // Slot background
                 
                 itemSlot.setScale(0.7); // Scale down the slot image if needed
                 itemSlot.setScrollFactor(0); // Fix images to screen
-                itemSlot.setDepth(0);
+                itemSlot.setDepth(10);
                 this.slotDisplayObjects.push(itemSlot); // Save the slot reference
         }
     }
-    
-        
-
         // Loop through inventoryItems and display their images
+        //CREATE IMAGE OF ITEM WHEN ITEM IS IN INVENTORY
         this.inventoryItems.forEach((item, index) => {
             let itemSlot = this.slotDisplayObjects[index];
             if (itemSlot) {
-                let itemDisplay = scene.add.image(itemSlot.x, itemSlot.y, item.imageKey)
-                    .setScale(0.7) // Scale down the item image if needed
-                    .setScrollFactor(0); // Fix images to screen
-               this.itemDisplayObjects.push(itemDisplay); // Store the item display object
-            
-                //let itemNameText = scene.add.text(itemSlot.x - 40, itemSlot.y - 50, item.name);
+                console.log(item.imageKey);
+
+                let itemFrame = item.frame;
+
+                if(item.name.includes('coffee cup (empty)')){
+                    if(item.contains === 'water'){
+                        itemFrame = 1;
+                        console.log("coffee cup item frame set to: +", itemFrame);
+                        console.log("item.frame = : ", item.frame);
+                    } else {
+                        itemFrame = 0; 
+                        console.log("coffee cup item frame set to: ", itemFrame);
+                    }
+                }
                 
-                this.dialogueFont.clearText();
-                let itemNameText = this.dialogueFont.drawText(item.name, itemSlot.x - 30, itemSlot.y - 40);
 
-                //itemNameText.setColor('#000000');
-                //itemNameText.setScrollFactor(0);
-                this.itemNameDisplayObjects.push(itemNameText);
+                let itemDisplay = scene.add.sprite(itemSlot.x, itemSlot.y, item.imageKey, itemFrame)
+                    .setInteractive({ useHandCursor: true}) // enable input + hand cursor
+                    .setScale(0.7) // Scale down the item image if needed
+                    .setOrigin(0.5)
+                    .setSize(64,64)
+                    .setDepth(12)
+                    .setScrollFactor(0); // Fix images to screen
+                this.itemDisplayObjects.push(itemDisplay); // Store the item display object
 
-
-                let itemAmountText = scene.add.text(itemSlot.x + 13, itemSlot.y + 7, "x" + item.amount);
- 
-                itemAmountText.setStyle({font: '10px', color: '#000000'});
+                let itemAmountText = scene.add.text(itemSlot.x + 5, itemSlot.y + 10, "x" + item.amount);
+                itemAmountText.setStyle({font: '8px', color: '#000000'});
                 itemAmountText.setScrollFactor(0);
+                itemAmountText.setDepth(12)
                 this.itemAmountDisplayObjects.push(itemAmountText);
+
+
+            //ADD INTERACTIONS WITH ITEMS ON SCREEN
+            itemDisplay.on('pointerover', () => {
+                console.log('pointer is over the item');
+                this.showItemTooltip(item, itemDisplay.x, itemDisplay.y - 50);
+                itemDisplay.setTint(0xffffaa);
+            });
+            
+            itemDisplay.on('pointerout', () => {
+                this.hideItemTooltip();
+                itemDisplay.clearTint();
+            });
+
+            itemDisplay.on('pointerdown', () =>{
+                this.selectSlot(index);
+            })
+
+            this.scene.input.setDefaultCursor('pointer');
+       
+
+
+
+
             }
         });
     }
-
      //update inventory item images without clearing the slots / everything in the scene
     updateInventoryGUI(scene){
-      
+        console.log('Updating inventory GUI...');
         //clear previous item images
         this.itemDisplayObjects.forEach(itemDisplay => {
-           if(itemDisplay) itemDisplay.destroy(); // Destroy only item images
+           if(itemDisplay) itemDisplay.destroy(); // image objects
         });
 
         //clear previous item name text
         this.itemNameDisplayObjects.forEach(itemNameText => {
-            if(itemNameText) itemNameText.destroy(); // Destroy only item images
-            this.dialogueFont.clearText();
+            if(itemNameText) {
+                this.dialogueFont.clearText(itemNameText);
+            }
+                
         });
 
         //clear previous item amount number
         this.itemAmountDisplayObjects.forEach(itemAmountText => {
-           if(itemAmountText) itemAmountText.destroy(); // Destroy only item images
-   
+           if(itemAmountText) itemAmountText.destroy(); // number objects
         });
+
+
         this.itemDisplayObjects = []; // Reset the array of item images
         this.itemNameDisplayObjects = [];
         this.itemAmountDisplayObjects =[]; 
 
         //redraw the inventory based on current inventoryItems
         this.createInventoryGUI(scene);
+    }
+
+    createMoneyPouchGUI(scene){
+        let moneyGUI = scene.add.image(this.coinPouchGUIX, this.coinPouchGUIY, this.slotImage);
+        moneyGUI.setScrollFactor(0);
+        moneyGUI.setScale(1.5, 0.5);
+        moneyGUI.setDepth(10);
+        this.moneyGUIText = this.dialogueFont.drawText("coins: " + gameState.playerCurrency, moneyGUI.x-40, moneyGUI.y-10);
+
+    }
+
+    updateMoneyGUI(scene){
+        if(this.moneyGUIText) {
+            this.dialogueFont.clearText(this.moneyGUIText);
+        }
+        this.createMoneyPouchGUI(scene);
     }
 
     //method to list all items in inventory.
@@ -177,14 +229,107 @@ console.log("this happens...");
         }
     }
 
+    createToolTip(scene){
+        this.tooltipText = scene.add.text(0, 0, '', {
+            font: '16px Arial',
+            fill: '#fff',
+            backgroundColor: '#000',
+            padding: {x:5, y:3},
+        }).setDepth(1000).setVisible(false).setScrollFactor(0);
+}
+
+    showItemTooltip(item, x, y) {
+
+        this.tooltipText.setText(`${item.name}\nValue: ${item.value}`);
+        this.tooltipText.setPosition(x+10, y-10);
+        this.tooltipText.setVisible(true);
+
+    }
+
+    hideItemTooltip(){
+        this.tooltipText.setVisible(false);
+    }
+
+    createSelectorImage() {
+        if (!this.selectorImage) {
+            this.selectorImage = this.scene.add.image(0, 0, this.slotImage)
+                .setScale(0.8)
+                .setScrollFactor(0)
+                .setDepth(11)
+                .setVisible(false);
+        }
+    }
+
+    selectSlot(index) {
+        const selectedSlot = this.slotDisplayObjects[index];
+        this.itemInSlot = this.inventoryItems[index];
 
 
-    showSeedText() {
-    this.dialogueFont.drawText("coffee seed", 850, 380);
+        if(selectedSlot){
+
+            if(this.selectedSlot === selectedSlot){
+                this.selectedItem = null;
+                this.selectorImage.setVisible(false);
+                this.hideItemTooltip();
+                this.selectedSlot = null;
+                this.itemInSlot = null;
+            } else{
+
+                this.selectedItem = selectedSlot.item || null; //null if no item in slot
+                this.selectorImage.setPosition(selectedSlot.x, selectedSlot.y);
+                this.selectorImage.setVisible(true);
+
+
+                if(this.itemInSlot){
+                    console.log(`selected item: ${this.itemInSlot.name}`);
+                } else {
+                    console.log(`Empty slot selected (index: ${index})`);
+                    //console.log("selected slot = slotDisplayObjects[index]", selectedSlot);
+                    console.log("item in slot = inventoryitems[index]", this.itemInSlot);
+                    console.log("does selectedslot have item?", selectedSlot.item);
+                   // console.log("Does itemInSlot have item? ", itemInSlot.item);
+                }
+
+
+                // Update the reference to the currently selected slot
+            this.selectedSlot = selectedSlot;
+            }
+            
+
+        
+    }
+
 }
 
 
-}
+    enableInventoryControls() {
+        const keys = this.scene.input.keyboard.addKeys({
+            one: Phaser.Input.Keyboard.KeyCodes.ONE,
+            two: Phaser.Input.Keyboard.KeyCodes.TWO,
+            three: Phaser.Input.Keyboard.KeyCodes.THREE,
+            four: Phaser.Input.Keyboard.KeyCodes.FOUR,
+            five: Phaser.Input.Keyboard.KeyCodes.FIVE,
+            six: Phaser.Input.Keyboard.KeyCodes.SIX,
+        });
+    
+        keys.one.on('down', () => this.selectInventoryIndex(0));
+        keys.two.on('down', () => this.selectInventoryIndex(1));
+        keys.three.on('down', () => this.selectInventoryIndex(2));
+        keys.four.on('down', () => this.selectInventoryIndex(3));
+        keys.five.on('down', () => this.selectInventoryIndex(4));
+        keys.six.on('down', () => this.selectInventoryIndex(5));
+    }
+    
+    selectInventoryIndex(index) {
+        if (index >= 0 && index < this.slotDisplayObjects.length) {
+            this.selectedIndex = index;
+            this.selectSlot(index);
+        }
+    }
+
+
+
+    }
 
 
 export default inventory;

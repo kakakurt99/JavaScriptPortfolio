@@ -81,9 +81,195 @@ CURRENT TASK:
 
 
 -LOAD SIGNPOST INTO GAME -YANG
--CREATE INVENTORY SLOTS BACKGROUND -
--COLLISION FOR BUILDING -
--MAKE GOLD TO PLAYER -
--MAKE GUI FOR GOLD? - 
--INTERACT WITH SHOP TO BUY SEEDS. - 
+-CREATE INVENTORY SLOTS BACKGROUND - DONE BUT MEH
+-COLLISION FOR BUILDING - DONE
+-MAKE GOLD TO PLAYER - NOT DONE
+-MAKE GUI FOR GOLD? - NOT DONE
+-INTERACT WITH SHOP TO BUY SEEDS. - NOT DONE
+---------------------------------------- 14/04/2025------------------------------------------
 
+CREATED PLAYER CLASS AND REFACTORED CODE 
+
+CREATED GAMESTATE VARIABLES FOLDER
+
+FINISHED DRAWING BUILDING A
+
+STARTED DRAWING ANIMALS
+
+NOW -> GIVE PLAYER MONEY
+->created on screen gui with money that updates
+
+-> CREATE SHOP
+
+-> create pause menu scene
+
+------------------------------------ 15/04/2025 --------------------------
+SHOP GUI WORKING WHEN USER PRESSES 'S' - DISAPPEARS ON PRESSIN 'R'.-- DONE
+
+CREATE SHOP FUNCTIONAILITY-- DONE
+
+-BUYING ITEMS-- DONE
+->buy item -- DONE
+-> check prices in db -- DONE
+->if userCurrency >= item.price, inventory.item ++ ;-- DONE
+
+------CREATED PLAYERINVENTORY INSIDE GAMESTATE SO THAT IT CAN BE SHARED GLOBALLY
+
+FIXED PLAYER INVENTORY
+ADDED IMAGES FOR SHOP WHEN PURCHASING ITEMS AND GOING INTO INVENTORY
+
+ADD MOUSE INTERACTION ---------------- DONE
+WHEN HOVER ON ITEM DISPLAY INFO ------ DONE
+HIDE ITEM NAMES UNLESS MOUSE OVER ---- DONE
+
+
+CURRENT TASK: INVENTORY SELECTOR. USER CAN PRESS 1,2,3,4,5,6 TO SELECT DIFFERENT ITEMS IN THE INVENTORY. 
+
+
+------------------------------------ 16/04/2025 ---------------------------------------------------------
+
+CURRENT TASK: 
+FIX INVENTORY SELECTOR -- DONE
+CREATE SPRITE & INTERACTION FOR THE SHOP (OPEN SHOP WHEN INTERACT WITH SPRITE) --- WORKS ON THE SHOP DOOR
+FIX PLANT! 
+
+------------------------------------ 17/04/2025 ---------------------------------------------------------
+
+
+CURRENT TASK:
+
+allow player to place a tile ---- DONE
+
+TODAY - DREW PLANTS / TREES / WATER PIPES / PUMP 
+
+--------------------------------------------- 18/04/2025 -------------------------------------------------------------
+
+PLANTING COFFEE SEEDS...? ---- tile placing sorted.
+
+TASKS:
+
+CREATED A SPREADSHEET WITH BEAN ATTRIBUTES AND SALES COSTS. 
+
+
+---draw some plants
+
+--remove plant from screen ---- DONE
+
+
+
+
+-- REMOVE POT ON CLICK
+
+
+
+--allow player to plant seeds in pot ---- 
+
+
+--REDUCE AMOUNT OF POTS WHEN PLAYER PLACES ONE
+
+
+-----------------------------------------------19/04/2025------------------------------------------------------------------
+
+MORNING : DREW SMALL PLANTS AND MEDIUM SIZED PLANTS 1 MODEL
+--resized small, medium and large plants
+
+---> still need to draw wet/dry soil in pots for med/large plants.
+
+
+
+
+
+---- KEEP WORKING ON POTS/PLANTING ETC
+--- REMOVE POT?
+
+
+--- PUT COMPOST IN POT
+----- POT CHANGE TO DIRT IN POT FRAME 
+--- PUT SEED IN POT 
+----- POT CHANGE TO SEED DIRT IN POT 
+--- WATER PO
+----- CHANGE PICTURE
+--- GROWTH STAGES...
+--- HARVEST
+--- GET BEAN IN INVENTORY
+--- BEAN PROPERTIES ETC. 
+
+
+--------------------------- 20/04/2025 -----------------------------------
+
+DAY OFF
+
+---------------------------21/04/2025--------------------------------------
+
+DREW BIG TENT
+
+DRAWING LITTLE TENT..
+
+Need to be able to put seed in pot, add water
+
+
+^^^^ todays task
+
+ADDED THE ABILITY TO PUT COMPOST, SEED, WATER INTO A PLANT POT
+
+POT IS TIED TO THE SEED NAME
+
+NEED TO FIGURE OUT HOW TO CREATE PLANT AND HAVE IT GROW BASED ON THE SEEDS METADATA.
+
+--------------------------22/04/2025---------------------------------------
+
+
+REPAINTED TARAS OLD HOUSE
+
+PLAYED AROUND WITH COLOUR OF GROUND TILES
+
+FINISHED PAINGING LITTLE TENT
+
+
+need to store seedID inside the watered plant pot, then get the seedInfo, using the id, to grow a plant based on that seed
+
+
+main.js:453 Uncaught ReferenceError: seedData is not defined
+    at main.getSeedInfoById (main.js:453:1)
+
+-------------------------- 23/04/2025---------------------------------------------------------------------------------------
+
+ created a cup item to be used for watering plants
+
+
+ -- object is created
+-- item image doesn't update when coffee cup (empty) is used on a water source...
+
+^^^^^^ WORKING
+
+NEXT : UPDATE HOVER OVER TEXT TO UPDATE NAME OF THE ITEM BASED ON FRAME
+
+-WHEN USED ON A PLANT, EMPTY CUP AND START PLANT GROWTH.
+
+
+
+if(this.myInventory.itemInSlot){
+
+    if(this.myInventory.itemInSlot?.name === 'coffee cup (empty)'){
+        if(groundTile?.properties?.watersource || plantsTile?.properties?.watersource){
+            console.log("Filling your cup with water...");
+          
+            this.myInventory.itemInSlot.contains = 'water';
+
+            console.log("itemInSlot.contains: " , this.myInventory.itemInSlot.contains);
+
+
+
+            const newItem = this.shop.getItem("coffee cup (water)");
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ IM WORKING ON THIS 
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            this.myInventory.updateInventoryGUI(this);
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------
+24/04/2025
+-----------------------------------------------------------------------------------
+need to update cup item name when in inventory. 
