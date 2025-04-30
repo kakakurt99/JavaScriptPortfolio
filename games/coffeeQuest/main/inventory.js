@@ -116,40 +116,45 @@ console.log("this happens...");
             if (itemSlot) {
                 console.log(item.imageKey);
 
-                let itemFrame = item.frame;
+                let itemFrame = item.frame ?? 0;
 
-                if(item.name.includes('coffee cup (empty)')){
-                    if(item.contains === 'water'){
-                        itemFrame = 1;
-                        console.log("coffee cup item frame set to: +", itemFrame);
-                        console.log("item.frame = : ", item.frame);
-                    } else {
-                        itemFrame = 0; 
-                        console.log("coffee cup item frame set to: ", itemFrame);
-                    }
-                }
+                // Optional override for coffee cup logic
+                // Update frame logic for coffee cup
+                if (item.name.includes('Coffee Cup')) {
+                    itemFrame = item.contains === 'water' ? 1 : 0;
+                    console.log("Coffee Cup item frame set to: ", itemFrame);
+        }
+
+
+        //check if itemdisplay already exists
+        let itemDisplay = this.itemDisplayObjects[index];
+
+        if(itemDisplay){
+            itemDisplay.setFrame(itemFrame);
+            console.log("Updated frame for existing itemDisplay: ", itemFrame);
+        } else{
                 
 
-                let itemDisplay = scene.add.sprite(itemSlot.x, itemSlot.y, item.imageKey, itemFrame)
+                    itemDisplay = scene.add.sprite(itemSlot.x, itemSlot.y, item.imageKey, itemFrame)
                     .setInteractive({ useHandCursor: true}) // enable input + hand cursor
                     .setScale(0.7) // Scale down the item image if needed
                     .setOrigin(0.5)
                     .setSize(64,64)
                     .setDepth(12)
                     .setScrollFactor(0); // Fix images to screen
-                this.itemDisplayObjects.push(itemDisplay); // Store the item display object
 
+                this.itemDisplayObjects.push(itemDisplay); // Store the item display object
+            }
                 let itemAmountText = scene.add.text(itemSlot.x + 5, itemSlot.y + 10, "x" + item.amount);
                 itemAmountText.setStyle({font: '8px', color: '#000000'});
                 itemAmountText.setScrollFactor(0);
                 itemAmountText.setDepth(12)
                 this.itemAmountDisplayObjects.push(itemAmountText);
 
-
             //ADD INTERACTIONS WITH ITEMS ON SCREEN
             itemDisplay.on('pointerover', () => {
                 console.log('pointer is over the item');
-                this.showItemTooltip(item, itemDisplay.x, itemDisplay.y - 50);
+                this.itemInfoDisplay = this.showItemTooltip(item, itemDisplay.x, itemDisplay.y - 50);
                 itemDisplay.setTint(0xffffaa);
             });
             
@@ -250,6 +255,10 @@ console.log("this happens...");
         this.tooltipText.setVisible(false);
     }
 
+    updateItemTooltip(scene){
+        
+    }
+
     createSelectorImage() {
         if (!this.selectorImage) {
             this.selectorImage = this.scene.add.image(0, 0, this.slotImage)
@@ -281,6 +290,7 @@ console.log("this happens...");
 
 
                 if(this.itemInSlot){
+                    this.getItemInSlot();
                     console.log(`selected item: ${this.itemInSlot.name}`);
                 } else {
                     console.log(`Empty slot selected (index: ${index})`);
@@ -299,6 +309,17 @@ console.log("this happens...");
         
     }
 
+}
+
+
+setItemInSlot(item){
+    console.log("Setting item in slot: ", item);
+    this.itemInSlot = item;
+}
+
+
+getItemInSlot(){
+    return this.itemInSlot;
 }
 
 

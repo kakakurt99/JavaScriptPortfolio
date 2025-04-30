@@ -273,3 +273,62 @@ if(this.myInventory.itemInSlot){
 24/04/2025
 -----------------------------------------------------------------------------------
 need to update cup item name when in inventory. 
+
+what else do I need to draw?
+
+
+
+Improve GUI for shop...
+improve gui for inventory/coins
+
+
+
+
+FIXED CUP ITEM UPDATING.
+
+LEARNED HOW TO CHANGE ITEMS EASILY. 
+ALSO CHANGES IMAGE FRAME
+
+WHEN USE CUP FULL OF WATER, ON GROUND TILE, CUP EMPTIES
+ALSO TRIED TO IMPROVE TREES.
+
+NEXT TASK:
+
+when use cup water on plant -> plant grow.
+
+would like to format the shop gui properly, item/price column and add option to buy multiple.
+also, if i move the shop spawn location , the shop gui will not move with it 
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+27/04/2025
+
+
+working on shop gui <<<<<<<<<<<
+
+need to do cup to plant. 
+start plant growth.
+----------------------------------------------------------------------------------------------
+
+28/04/2025
+
+water plant now begins plant growth cycle!!
+
+Need to figure out how to harvest plant and get beanzzzzz
+
+------------------------------------------ 29/04/2025 ----------------------------------------------------------------
+
+
+DREW COFFEE CART PIXEL ART AND COFFEE BEANS... 
+
+NO CODING TODAY!!! 
+
+
+--------------------------------- 30/04/2025 -------------------------------------------------------------------------------------
+
+
+
+
+
+
+

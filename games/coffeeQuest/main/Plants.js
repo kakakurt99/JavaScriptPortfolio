@@ -2,19 +2,26 @@ import gameState from './gameState.js';
 
 
 class Plants {
-    constructor(name, growthTime, growthStage = 0, maxGrowthStage = 50, sprite = null){
+    constructor(name, growthTime, growthStage = 0, maxGrowthStage = 6) {
         this.name = name;
-        this.growthTime = growthTime; //time for seed to grow
-        this.growthStage = growthStage; //initial stage
-        this.maxGrowthStage = maxGrowthStage; //e.g. 3 growth stages
-        this.sprite = sprite; //assign sprite later
+        this.growthTime = growthTime; // total time to fully grow
+        this.growthStage = growthStage;
+        this.maxGrowthStage = maxGrowthStage;
+        this.sprite = null;
+        this.growthTimer = null;
+        this.growthCallback = null;
     }
 
-    assignSprite(sprite){
+
+assignSprite(sprite){
         this.sprite = sprite;
     }
 
+
+
 startGrowth(){
+
+    const intervalTime = this.growthTime / this.maxGrowthStage;
 
     const interval = setInterval(() =>{
         if(this.growthStage < this.maxGrowthStage){
@@ -23,20 +30,37 @@ startGrowth(){
                 this.sprite.setFrame(this.growthStage);
             
             console.log(`${this.name} has reached growth stage ${this.growthStage}!`);
+
+            if(this.onGrowthUpdateCallback){
+                this.onGrowthUpdateCallback(this.growthStage);
+            }
+
+
+
         } else{
             clearInterval(interval);
             console.log(`${this.name} is fully grown!`);
+    
         }
-    }, this.growthTime);
+    }, 1000);
    
 }
 
-
-harvestCrop(){
-    this.growthStage = 0;
-    this.sprite.setFrame(this.growthStage);
-    console.log("growth stage is : " + this.growthStage);
+destroy() {
+    if (this.sprite) {
+        this.sprite.destroy();
+    }
+    if (this.growthTimer) {
+        clearInterval(this.growthTimer);
+    }
 }
+
+
+ // Method to set the growth update callback
+ onGrowthUpdate(callback) {
+    this.onGrowthUpdateCallback = callback;
+  }
+
 
 
 }

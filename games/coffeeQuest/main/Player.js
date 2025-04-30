@@ -89,7 +89,8 @@ export default class Player {
         this.player = this.scene.physics.add.sprite(spawnPoint.x, spawnPoint.y, this.playerImageKey);
         this.player.setCollideWorldBounds(true);
         this.player.setScale(1.5);
-        this.player.setSize(15,15);
+        this.player.setSize(10,5);
+        this.player.setOffset(12,18);
         this.player.setDepth(1);
 
 

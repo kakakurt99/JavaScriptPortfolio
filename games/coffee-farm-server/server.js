@@ -22,9 +22,12 @@ const crops = [
         id: 1, 
         name: 'Arabica Seed',
         shopPrice: 2,  // Changed to number
+	isAvailableInShop: true,
 	value: 1,
         quantity: 0,
         type: 'seed',
+	growthTime: 60,
+	maxGrowthStage: 6,
         cropId: 1,
 	imageKey: 'shopItems',
 	frame: 0
@@ -42,9 +45,12 @@ const crops = [
         id: 2, 
         name: 'Robusta Seed',
         shopPrice: 5,  // Changed to number
+	isAvailableInShop: true,
 	value: 1,
         quantity: 0,
         type: 'seed',
+	growthTime: 45,
+	maxGrowthStage: 6,
         cropId: 2,
 	imageKey: 'shopItems',
 	frame: 1
@@ -62,9 +68,12 @@ const crops = [
         id: 3, 
         name: 'Geisha Seed',
         shopPrice: 10,  // Changed to number
+	isAvailableInShop: true,
 	value: 1,
         quantity: 0,
         type: 'seed',
+	growthTime: 90,
+	maxGrowthStage: 6,
         cropId: 3,
 	imageKey: 'shopItems',
 	frame: 2
@@ -80,8 +89,9 @@ const crops = [
     seeds: [
       {
         id: 4, 
-        name: 'basic pot',
+        name: 'Basic Pot',
         shopPrice: 10,  // Changed to number
+	isAvailableInShop: true,
 	value: 1,
         quantity: 0,
         type: 'pot',
@@ -99,8 +109,9 @@ const crops = [
     seeds: [
       {
         id: 5, 
-        name: 'compost',
+        name: 'Compost',
         shopPrice: 10,  // Changed to number
+	isAvailableInShop: true,
 	value: 1,
         quantity: 0,
         type: 'soil',
@@ -118,8 +129,9 @@ const crops = [
     seeds: [
       {
         id: 6, 
-        name: 'coffee cup (empty)',
+        name: 'Coffee Cup (empty)',
         shopPrice: 10,  // Changed to number
+	isAvailableInShop: true,
 	value: 1,
         quantity: 0,
 	contains: null,
@@ -129,8 +141,9 @@ const crops = [
       },
 	{
         id: 7, 
-        name: 'coffee cup (full)',
+        name: 'Coffee Cup (water)',
         shopPrice: 10,  // Changed to number
+	isAvailableInShop: true,
 	value: 1,
         quantity: 0,
 	contains: 'water',

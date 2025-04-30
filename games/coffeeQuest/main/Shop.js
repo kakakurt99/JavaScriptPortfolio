@@ -40,10 +40,10 @@ class Shop {
         }
 
 
-        this.shopContainer = this.scene.add.container(306,80);
+        this.shopContainer = this.scene.add.container(306,60);
         const elementsToAdd = [];
 
-        const shopTitle = this.scene.add.text(100, 25, 'Shop', {
+        const shopTitle = this.scene.add.text(260, 25, 'Shop', {
             font: '20px Arial',
             fill: '#fff'})
             .setOrigin(0.5);
@@ -51,17 +51,38 @@ class Shop {
             //get shop items from the server
             await this.loadShopData();
 
+            //filter out items that aren't in the shop
+
+            this.items = this.items.filter(item => item.isAvailableInShop !== false);
+
 
            // const elementsToAdd = []; // all display objects go in the container
             const bg = this.scene.add.graphics();
             bg.fillStyle(0xbf9a6e, 1);
-            bg.fillRect(10, 0, 500, 320);
+            bg.fillRect(10, 0, 500, 400);
+
+            bg.lineStyle(4, 0x000000, 1);
+            bg.strokeRect(10, 0, 500, 400);
             
             elementsToAdd.push(bg, shopTitle);
 
+            const itemsPerRow = 1;
+            const spacingX = 260; 
+            const spacingY = 50; 
+
+
             //display items in shop
             this.items.forEach((item, index) => {
-                const yPos = 150 + index * 50;
+
+                const row = Math.floor(index / itemsPerRow);
+                const col = index % itemsPerRow;
+
+                const xPos = 60+col*spacingX;
+                const yPos = 70+row*spacingY;
+                
+
+
+               // const yPos = 150 + index * 50;
            
         const sprite = this.scene.add.sprite(60, yPos, 'shopItems'); //The index is the frame number
                 sprite.setOrigin(0);
@@ -69,49 +90,60 @@ class Shop {
             
             
                 //create item text            
-        const itemText = this.scene.add.text(75, yPos - 75, `${item.name} - Price: ${item.shopPrice} coins`, {
-                    font: '16px Arial',
-                    fill: '#fff'
+        const itemText = this.scene.add.text(xPos, yPos, `${item.name}`, {
+                    font: 'bold 18px Arial',
+                    fill: '#000000'
             });
 
+            const itemPrice = this.scene.add.text(xPos+ 220, yPos, `${item.shopPrice} coins`, {
+                font: 'bold 18px Arial',
+                fill: '#000000'
+        });
+
         //create buy button for each item
-        const button = this.scene.add.text(450, yPos -72, 'Buy',{
-                font: '16px Arial',
-                fill: '#0f0'
+        const button = this.scene.add.text(xPos+396, yPos-2, 'Buy',{
+                font: 'bold 16px Arial',
+                fill: '#000000'
             })
             .setInteractive()
             .on('pointerdown', () => this.shopSellItemToPlayer(item));
 
         const buttonBg = this.scene.add.graphics();
-        buttonBg.fillStyle(0x000000, 1);
-        buttonBg.fillRect(445, yPos -75, 45, 25);
+        buttonBg.fillStyle(0xffd9a3, 1);
+        buttonBg.fillRect(xPos+390, yPos-5, 45, 25);
+        buttonBg.lineStyle(4, 0x000000, 1);
+        buttonBg.strokeRect(xPos+390, yPos-5, 45, 25);
+
+        
 
         this.buttons.push(button);
-
-        elementsToAdd.push(sprite, itemText, buttonBg, button);
-
+        elementsToAdd.push(sprite, itemText, itemPrice, buttonBg, button);
 
             });
-
             this.shopContainer.add(elementsToAdd);
-            this.shopContainer.setDepth(4);
-
-
+            this.shopContainer.setDepth(15);
             this.guiCreated = true;       // 👈 flag it so we don’t recreate
-    }
+    
+    
+        }
 
 
 
-    async loadShopData(){
+    async loadShopData() {
+        if (this.isLoadingShopData) return; // Don't double fetch!
+        this.isLoadingShopData = true;
+    
         try {
             const response = await fetch('http://localhost:3000/shop');
-            if(!response.ok){
+            if (!response.ok) {
                 throw new Error('Failed to fetch shop data');
             }
             this.items = await response.json();
             console.log('Shop items: ', this.items);
-        } catch (error){
+        } catch (error) {
             console.log('Error loading shop data:', error);
+        } finally {
+            this.isLoadingShopData = false;
         }
     }
 
@@ -121,7 +153,11 @@ class Shop {
 
 
     getItem(name){
-        return this.items[name];
+        console.log("attempting to get item..")
+        const item = this.items.find(item => item.name === name);
+        console.log(item);
+        return item;
+
     }
 
 
