@@ -6,6 +6,7 @@ import Player from './Player.js';
 import gameState from './gameState.js';
 import Dialogue from './Dialogue.js';
 import Shop from './Shop.js';
+import CoffeeBean from './CoffeeBean.js';
 
 
 
@@ -313,11 +314,16 @@ plantSeedInPot(){
 
 waterPlantWithCup(){
     this.input.on('pointerdown', (pointer) => {
+
+
         const { tileX, tileY } = this.getTileCoordsFromPointer(pointer);
         const tileKey = `${tileX},${tileY}`;
 
         const tile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.plantslayer);
         const pot = this.potDataMap.get(tileKey);
+
+
+    
 
         //check to see if seeds are in plant pot
         if(tile && pot && pot.hasPot && pot.seed && !pot.watered && this.myInventory.itemInSlot.contains === 'water'){
@@ -334,7 +340,6 @@ waterPlantWithCup(){
     }
     });
 }
-
 
 getTileProperties(tile) {
     if (!tile) return null;
@@ -372,11 +377,9 @@ startSeedGrowth(tileX, tileY) {
 
     const tile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.plantslayer);
     
-
     if(tile){
     //remove tile
     this.myMap.map.putTileAt(-1, tileX, tileY, false, this.myMap.plantslayer);
-    
 
   const plantSprite = this.add.sprite(
     tile.pixelX + 16,
@@ -384,10 +387,22 @@ startSeedGrowth(tileX, tileY) {
     'plantStages2',
     plantStartingFrame);
     plantSprite.setDepth(10);
+    plantSprite.setInteractive();
+    plantSprite.on('pointerdown', () => {
+        const currentGrowth = pot.growthStage;
+        const maxGrowth = pot.maxGrowthStage;
 
+        if(currentGrowth >= maxGrowth) {
+            this.harvestCrop(tileX, tileY);
+        }
+        else{
+            console.log(`${seedInfo.name} is not ready to harvest yet.`);
+
+        }
+    });
+    // Create a new plant object with the seed's properties
 
     console.log(`Creating a new plant for seed: ${seedInfo.name}`);
-
     const plant = new Plants(
       seedInfo.name,
       seedInfo.growthTime,
@@ -396,12 +411,10 @@ startSeedGrowth(tileX, tileY) {
     );
 
     plant.assignSprite(plantSprite);
-
-
     // When the plant grows, update the pot's growthStage
         plant.onGrowthUpdate((growthStage) => {
             console.log(`Plant at ${tileKey} grew to stage ${growthStage}`);
-            pot.growthStage = growthStage;
+            pot.growthStage = growthStage
         });
 
     pot.maxGrowthStage = seedInfo.maxGrowthStage || 6; // Safely copy max stages
@@ -411,32 +424,59 @@ startSeedGrowth(tileX, tileY) {
 
     } else {
         console.log(`No tile found at ${tileX}, ${tileY}`);
+
     }
   }
 
-harvestCrop(){
+harvestCrop(tileX, tileY){
     
-    this.input.on('pointerdown', (pointer) => {
-        const { tileX, tileY } = this.getTileCoordsFromPointer(pointer);
+    const tileKey = `${tileX},${tileY}`;
+    const pot = this.potDataMap.get(tileKey);
 
-        const tile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.plantslayer);
+    if (!pot || !pot.plant) {
+        console.log(`No plant found at ${tileKey}. Cannot harvest.`);
+        return;
+    }
 
-        console.log("potdatamap.growthStage: ", this.potDataMap.growthStage);
-        console.log("potdatamap.maxGrowthStage: ", this.potDataMap.maxGrowthStage);
+    const plant = pot.plant;
+    const growthStage = pot.growthStage;
+    const maxGrowthStage = pot.maxGrowthStage || 6; // Default to 6 if not set
 
-        if(this.potDataMap.growthStage === this.potDataMap.maxGrowthStage){
-            console.log("plant finished growing.");
-            //add item to inventory
-            this.myInventory.addItem(coffeeBean);
-            //this.newPlant.harvestCrop();
-            //reset plant frame to 0
-        }
-        else {
-            console.log("no crops brother.");
-        }
-
-    });
+    if (growthStage >= maxGrowthStage) {
     
+        console.log(`Harvesting ${plant.name} at ${tileKey}`);
+        // Remove the plant sprite from the scene
+        if (plant.sprite) {
+            plant.sprite.destroy();
+        }
+
+        // Remove the tile from the map
+        this.myMap.map.putTileAt(-1, tileX, tileY, false, this.myMap.plantslayer);
+
+        const words = plant.name.split(" ");
+        const withoutLastWord = words.slice(0, -1).join(" ");   
+        // Add the harvested item to the player's inventory
+        console.log("plant object: ", plant);
+
+
+        //IF PLANT = GEISHA SEED  
+        // GIVE 2 GEISHA BEANS 
+        // plant.name = "geisha seed" 
+
+        const harvestItem = harvestedItemMap[seedName];
+        const bean = new CoffeeBean(harvestedItem);
+    
+        this.myInventory.addItem(bean); // Assuming harvestItem is defined in the plant object 
+        console.log(`You harvested ${plant.name} and received ${withoutLastWord} beans!`); 
+        this.myInventory.updateInventoryGUI(this); 
+
+        // Reset pot data
+        pot.hasPot = false; 
+        pot.hasCompost = false; 
+        pot.seed = null; 
+        pot.watered = false; 
+        pot.growthStage = 0; 
+    }
 }
 
 pauseThisScene(){

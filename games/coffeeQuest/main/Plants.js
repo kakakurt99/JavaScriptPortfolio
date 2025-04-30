@@ -39,8 +39,8 @@ startGrowth(){
 
         } else{
             clearInterval(interval);
-            console.log(`${this.name} is fully grown!`);
-    
+            //console.log(`${this.name} is fully grown!`);
+                
         }
     }, 1000);
    

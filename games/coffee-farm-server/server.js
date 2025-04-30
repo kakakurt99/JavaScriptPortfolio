@@ -13,7 +13,7 @@ const port = 3000;
 const crops = [
   { 
     id: 1, 
-    name: 'Arabica', 
+    name: 'Arabica Bean', 
     growthTime: 60,  
     sellPrice: 10, 
     quality: 'B',
@@ -36,7 +36,7 @@ const crops = [
   },
   { 
     id: 2, 
-    name: 'Robusta', 
+    name: 'Robusta Bean', 
     growthTime: 45,
     sellPrice: 15, 
     quality: 'C',
@@ -59,7 +59,7 @@ const crops = [
   },
   { 
     id: 3, 
-    name: 'Geisha', 
+    name: 'Geisha Bean', 
     growthTime: 90,
     sellPrice: 100,
     quality: 'A',

@@ -326,6 +326,46 @@ NO CODING TODAY!!!
 
 --------------------------------- 30/04/2025 -------------------------------------------------------------------------------------
 
+if(pot.growthStage = pot.maxGrowthStage){
+        console.log("plant is fully grown!");
+        this.harvestCrop(tileX, tileY);
+    }
+^^^^^^^^^^^^ NOT WORKING
+
+// Add the harvested item to the players inventory
+        this.myInventory.addItem(plant); 
+        //
+        Assuming harvestItem is defined in the plant object
+        console.log(`You harvested ${plant.name} and received ${plant.name} beans!`);
+        this.myInventory.updateInventoryGUI(this);
+
+
+        RETURNS GEISHA SEED 
+        VALUE UNDEFINED
+        NO IMAGE. 
+
+
+
+
+....................
+
+need to link the plant to the seedID in the database.
+
+refactor database???????????
+
+seed database
+
+bean database
+
+
+
+shop database????????
+
+
+
+
+
+
 
 
 
