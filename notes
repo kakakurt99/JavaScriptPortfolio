@@ -1,0 +1,10 @@
+create a player / sword testing version
+
+ main gamescene, index, game.js
+
+ load player
+ load sword
+ load BACKGROUND
+ attach sword to player
+
+move player + sword together
