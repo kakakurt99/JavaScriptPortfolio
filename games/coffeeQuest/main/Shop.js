@@ -43,13 +43,14 @@ class Shop {
         this.shopContainer = this.scene.add.container(306,60);
         const elementsToAdd = [];
 
-        const shopTitle = this.scene.add.text(260, 25, 'Shop', {
-            font: '20px Arial',
-            fill: '#fff'})
-            .setOrigin(0.5);
+      //  const shopTitle = this.scene.add.text(260, 25, 'Shop', {
+      //      font: '20px Arial',
+     //       fill: '#fff'})
+     //       .setOrigin(0.5);
 
             //get shop items from the server
-            await this.loadShopData();
+            //await this.loadShopData();
+            await this.loadItemData();
 
             //filter out items that aren't in the shop
 
@@ -64,11 +65,11 @@ class Shop {
             bg.lineStyle(4, 0x000000, 1);
             bg.strokeRect(10, 0, 500, 400);
             
-            elementsToAdd.push(bg, shopTitle);
+            elementsToAdd.push(bg);
 
             const itemsPerRow = 1;
             const spacingX = 260; 
-            const spacingY = 50; 
+            const spacingY = 40; 
 
 
             //display items in shop
@@ -78,7 +79,7 @@ class Shop {
                 const col = index % itemsPerRow;
 
                 const xPos = 60+col*spacingX;
-                const yPos = 70+row*spacingY;
+                const yPos = 20+row*spacingY;
                 
 
 
@@ -91,18 +92,18 @@ class Shop {
             
                 //create item text            
         const itemText = this.scene.add.text(xPos, yPos, `${item.name}`, {
-                    font: 'bold 18px Arial',
+                    font: 'bold 14px Arial',
                     fill: '#000000'
             });
 
             const itemPrice = this.scene.add.text(xPos+ 220, yPos, `${item.shopPrice} coins`, {
-                font: 'bold 18px Arial',
+                font: 'bold 14px Arial',
                 fill: '#000000'
         });
 
         //create buy button for each item
         const button = this.scene.add.text(xPos+396, yPos-2, 'Buy',{
-                font: 'bold 16px Arial',
+                font: 'bold 14px Arial',
                 fill: '#000000'
             })
             .setInteractive()
@@ -127,7 +128,23 @@ class Shop {
     
         }
 
-
+        async loadItemData() {
+            if (this.isLoadingItemData) return; // Don't double fetch!
+            this.isLoadingItemData = true;
+        
+            try {
+                const response = await fetch('http://localhost:3000/items');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch item data');
+                }
+                this.items = await response.json();
+                console.log('Shop items: ', this.items);
+            } catch (error) {
+                console.log('Error loading shop data:', error);
+            } finally {
+                this.isLoadingItemData = false;
+            }
+        }
 
     async loadShopData() {
         if (this.isLoadingShopData) return; // Don't double fetch!

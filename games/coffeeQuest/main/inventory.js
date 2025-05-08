@@ -1,5 +1,6 @@
 import gameState from './gameState.js'
 import Dialogue from './Dialogue.js';
+import Shop from './Shop.js';
 
 const maxInventory = 10; 
 
@@ -23,8 +24,10 @@ class inventory {
             this.coinPouchGUIY = 140;
             this.itemInSlot;
             
+            
 
             this.dialogueFont = new Dialogue(this.scene, 'charSheet');
+            this.shop = new Shop();
             // ✅ CREATE TOOLTIP ON INIT, so it exists for event handlers
             this.createToolTip(this.scene);
             this.createSelectorImage();
@@ -321,6 +324,9 @@ setItemInSlot(item){
 getItemInSlot(){
     return this.itemInSlot;
 }
+
+
+
 
 
     enableInventoryControls() {

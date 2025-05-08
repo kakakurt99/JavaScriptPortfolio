@@ -326,6 +326,7 @@ NO CODING TODAY!!!
 
 --------------------------------- 30/04/2025 -------------------------------------------------------------------------------------
 
+<<<<<<< HEAD
 if(pot.growthStage = pot.maxGrowthStage){
         console.log("plant is fully grown!");
         this.harvestCrop(tileX, tileY);
@@ -343,10 +344,53 @@ if(pot.growthStage = pot.maxGrowthStage){
         RETURNS GEISHA SEED 
         VALUE UNDEFINED
         NO IMAGE. 
+=======
+Taking care of Lucas
+
+Managed to fix harvest plant a little bit but I need to fix the way my databases work. 
+
+--------------------------------01/05/2025----------------------------------------
+
+
+
+New items database.
+
+Already implemented into shop class BUT
+
+small pot is no longer being placed on the ground...
+
+FIXED
+
+Cup doesnt change to empty when used on plant - ok for now because it make smy life easier
+
+harvest crop is not working. 
+
+^^^^^^^^ WORKINNG
+
+NEED TO CHANGE TILE IMAGE KEY AND DRAW SOME DIFFERENT COFFEE BEANS.
+
+PLANT IS NOT BEING REMOVED FROM SCREEN WHEN HARVESTED.
+
+PLANT SPRITE SWITCHES TO FRAME 1 - STEM
+
+NEXT: WHEN THE PLANT IS WATERED, START THE GROWING PROCESS AGAIN!
+
+^^ done but need to changes
+
+DRAW SOME 16PX COFFEE BEANS
+NEED TO CHANGE IMAGES!
+
+--------------------------- 02/05/2025---------------------------------------
+
+TASK: WHEN HARVESTING COFFEE PLANTS, GIVE THE PLAYER COFFEE BEANS INSTEAD OF COFFEE SEESD. 
+
+
+>>>>>>> eca5a42 (complete restructure and version 0.11 coffee game)
 
 
 
 
+<<<<<<< HEAD
 ....................
 
 need to link the plant to the seedID in the database.
@@ -360,6 +404,15 @@ bean database
 
 
 shop database????????
+=======
+
+
+
+
+
+
+
+>>>>>>> eca5a42 (complete restructure and version 0.11 coffee game)
 
 
 
