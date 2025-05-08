@@ -54,19 +54,20 @@ this.load.spritesheet('charSheet', '../assets/fonts/monogram/bitmap/monogram-bit
 });
 
 this.load.json('charMap', '../assets/fonts/monogram/bitmap/monogram-bitmap.json')
-this.load.image("slotImage", "../assets/invSlot.png");
-this.load.image("inventoryBox", "../assets/inventoryBG.png");
-this.load.spritesheet('shopItems', '../assets/coffeebags.png', { frameWidth: 32, frameHeight: 32});
-this.load.spritesheet('potItems', '../assets/basicpot.png', {frameWidth: 16, frameHeight: 16});
-this.load.spritesheet('coffeecups', '../assets/coffeecup1.png', {frameWidth: 32, frameHeight: 32});
+this.load.image("slotImage", "../assets/images/invSlot.png");
+this.load.image("inventoryBox", "../assets/images/inventoryBG.png");
+this.load.spritesheet('shopItems', '../assets/images/coffeebags.png', { frameWidth: 32, frameHeight: 32});
+this.load.spritesheet('coffeeBeans', '../assets/images/coffeebeans.png', { frameWidth: 32, frameHeight: 32});
+this.load.spritesheet('potItems', '../assets/images/basicpot.png', {frameWidth: 16, frameHeight: 16});
+this.load.spritesheet('coffeecups', '../assets/images/coffeecup1.png', {frameWidth: 32, frameHeight: 32});
 
-this.load.image("compostItems", "../assets/compostbag.png");
+this.load.image("compostItems", "../assets/images/compostbag.png");
 
-this.load.image('coffeeseed', '../assets/coffeeSeed.png', { frameWidth: 16, frameHeight: 16});
-this.load.image('coffeebean', '../assets/coffeebean.png', { frameWidth: 16, frameHeight: 16});
-this.load.spritesheet("plantStages", "../assets/basicplantstages.png", { frameWidth: 16, frameHeight: 16});
-this.load.spritesheet('plantStages2', "../assets/basicplantstages2.png", { frameWidth: 16, frameHeight: 32});
-this.load.spritesheet("playerSprite", "../assets/newnpc.png", {
+this.load.image('coffeeseed', '../assets/images/coffeeSeed.png', { frameWidth: 16, frameHeight: 16});
+this.load.image('coffeebean', '../assets/images/coffeebean.png', { frameWidth: 16, frameHeight: 16});
+this.load.spritesheet("plantStages", "../assets/images/basicplantstages.png", { frameWidth: 16, frameHeight: 16});
+this.load.spritesheet('plantStages2', "../assets/images/basicplantstages2.png", { frameWidth: 16, frameHeight: 32});
+this.load.spritesheet("playerSprite", "../assets/images/newnpc.png", {
     frameWidth: 32,
     frameHeight: 32
 });
@@ -80,6 +81,16 @@ gameState.centerY = cam.centerY;
 
 this.myMap = new GameMap(this, "worldMap", "house1", "plants&pots", "groundtiles");
 this.potDataMap = new Map(); // Key: `${x},${y}` -> Value: pot object
+
+
+fetch('http://localhost:3000/beans')
+.then(response => response.json())
+.then(beans => {
+  console.log("Beans for gameplay:", beans);
+  this.beans = beans;
+})
+.catch(error => console.error('Error fetching beans:', error));
+
 
 //this.createPlant();
 //get spawnpoint from GameMap after it's created.
@@ -166,6 +177,7 @@ this.plantSeedInPot();
 this.waterPlantWithCup();
 this.fillCupAction();
 this.emptyCupAction();
+this.harvestCrop();
 
 
 }
@@ -204,7 +216,9 @@ tryPlacePotOnClick(){
         const groundTile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.groundlayer);
         const plantsTile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.plantslayer);
 
-       
+        console.log("this.shop =", this.shop);  // Should log the shop instance
+        console.log("this.shop.items =", this.shop.items);  // Should log the array of items
+        
 
         // Check if something is already there
         if(plantsTile){
@@ -216,7 +230,7 @@ tryPlacePotOnClick(){
         }
 
         // If the tile is empty and we have a basic pot
-        if(!plantsTile && this.myInventory.itemInSlot?.name === 'Basic Pot'){
+        if(!plantsTile && this.myInventory.itemInSlot?.name.includes('Plant Pot')){
             if(groundTile?.properties?.plantable){
                 console.log("Placing a basic pot.");
                 const tile = this.myMap.map.putTileAt(964, tileX, tileY, false, this.myMap.plantslayer);
@@ -322,6 +336,7 @@ waterPlantWithCup(){
         const tile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.plantslayer);
         const pot = this.potDataMap.get(tileKey);
 
+<<<<<<< HEAD
 
     
 
@@ -332,12 +347,27 @@ waterPlantWithCup(){
             this.myMap.map.putTileAt(967, tileX, tileY, false, this.myMap.plantslayer);
             // Mark the pot as watered
             pot.watered = true;
+=======
+        if(this.myInventory.itemInSlot && this.myInventory.itemInSlot.contains === 'water'){
+    //check to see if seeds are in plant pot
+if(pot && pot.hasPot && pot.seed && !pot.watered){
+    console.log(`Watering plant at ${tileKey}`);
+    //update image
+    this.myMap.map.putTileAt(967, tileX, tileY, false, this.myMap.plantslayer);
+    // Mark the pot as watered
+    pot.watered = true;
+
+    
+    this.startSeedGrowth(tileX, tileY, pot.seed.id);
+} else {
+console.log("Can't water this tile. It either has no pot, no seed or it's already watered!");
+}   
+        }
+        else{
+            return;
+        }
+>>>>>>> eca5a42 (complete restructure and version 0.11 coffee game)
         
-            
-            this.startSeedGrowth(tileX, tileY, pot.seed.id);
-    } else {
-        console.log("Can't water this tile. It either has no pot, no seed or it's already watered!");
-    }
     });
 }
 
@@ -430,6 +460,7 @@ startSeedGrowth(tileX, tileY) {
 
 harvestCrop(tileX, tileY){
     
+<<<<<<< HEAD
     const tileKey = `${tileX},${tileY}`;
     const pot = this.potDataMap.get(tileKey);
 
@@ -448,6 +479,62 @@ harvestCrop(tileX, tileY){
         // Remove the plant sprite from the scene
         if (plant.sprite) {
             plant.sprite.destroy();
+=======
+    this.input.on('pointerdown', (pointer) => {
+        const { tileX, tileY } = this.getTileCoordsFromPointer(pointer);
+        const tileKey = `${tileX},${tileY}`;
+        const tile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.plantslayer);
+
+
+        const pot = this.potDataMap.get(tileKey);
+        if(!pot){
+            console.log("No plant data at this tile.");
+            return;
+        }
+
+
+        console.log("rowthStage: ", pot.growthStage);
+        console.log("maxGrowthStage: ", pot.maxGrowthStage);
+
+        if(pot.growthStage === pot.maxGrowthStage){
+            console.log("Plant can be harvested!");
+            
+            //get bean from seed ID
+            
+            const seed = this.getItemById(pot.seed.id); // ✅ no .id
+            console.log("pot.seed.id", pot.seed.id);
+            console.log("seed =", seed);
+            
+            const bean = this.getBeanFromSeed(seed);
+            console.log("bean from seed =", bean);
+
+            if(bean){
+                this.myInventory.addItem(bean);
+                console.log(`Added ${bean.name} to inventory.`);
+
+                //reset plant sprite back to pot stem
+                const pot = this.potDataMap.get(tileKey);
+                if(pot && pot.plant && pot.plant.sprite){
+                    pot.plant.sprite.setFrame(0);
+
+console.log(`tile: ${tile}, pot: ${pot}, pot.haspot: ${pot.hasPot}, pot.seed: ${pot.seed}, !pot.watered: ${!pot.watered}`)
+                    tile && pot && pot.hasPot && pot.seed && !pot.watered
+                }
+
+                pot.growthStage = 0;
+                pot.watered = false;
+       
+            } else{
+                console.log("No matching bean found.");
+            }
+
+            //Reset tile & plant data
+
+            
+        }
+        else {
+            console.log("no crops brother.");
+>>>>>>> eca5a42 (complete restructure and version 0.11 coffee game)
         }
 
         // Remove the tile from the map
@@ -583,6 +670,18 @@ getInventoryItem(item){
     item = this.myInventory.itemInSlot.name;
     console.log("In your hand you have: ", this.myInventory.itemInSlot);
 }
+
+getBeanFromSeed(seedItem) {
+    console.log("seedItem.id =", seedItem.id);
+        console.log("all beans in shop =", this.shop.items.filter(i => i.type === 'bean'));
+    if (!seedItem || seedItem.type !== 'seed') return null;
+    return this.beans.find(item => item.cropId === seedItem.id);
+  }
+  
+  getItemById(id) {
+    console.log("Shop items:", this.shop.items);
+    return this.shop.items.find(item => item.id === id);
+  }
 
 getSeedInfoById(seedId){
 this.seedData = this.shop.getItemData(seedId);

@@ -22,7 +22,7 @@ export default class GameMap {
         this.buildinglayer = this.map.createLayer("buildinglayer", this.tilesetImages, 0, 0);
         this.groundlayer = this.map.createLayer("groundlayer", this.tilesetImages, 0, 0);
         this.pipelayer = this.map.createLayer("pipelayer", this.tilesetImages, 0, 0);
-        this.plantslayer = this.map.createLayer("plantslayer", this.tilesetImages, 0, 0);
+        this.plantslayer = this.map.createDynamicLayer("plantslayer", this.tilesetImages, 0, 0);
         this.objectlayer = this.map.getObjectLayer("objectlayer");
         this.treelayer = this.map.createLayer("treelayer", this.tilesetImages, 0 , 0);
 
@@ -33,7 +33,7 @@ export default class GameMap {
 
         this.plantslayer.setDepth(5);
         this.pipelayer.setDepth(2);
-        this.buildinglayer.setDepth(1);
+        this.buildinglayer.setDepth(2);
         this.groundlayer.setDepth(0);
 
         const spawnPoint = this.getSpawnPoint("playerSpawn");

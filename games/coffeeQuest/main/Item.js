@@ -25,6 +25,7 @@ constructor(name, type, quality, amount, value, imageKey){
   
 }
 */
+
 plantGrowthCycle(){
     // timer - completion %
     //every 2 seconds completion increase by 25 
