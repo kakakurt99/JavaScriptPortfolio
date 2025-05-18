@@ -42,7 +42,7 @@ export default class GameMap {
 
     getSpawnPoint(name = "playerSpawn", layerName = "objectlayer") {
         const layer = this.map.getObjectLayer(layerName);
-        console.log("Object layer:", layer); // 👈 See if layer is found
+        console.log("Object layer:", layer); // See if layer is found
 
         if (!layer) {
             console.warn(`Object layer "${layerName}" not found.`);
@@ -50,7 +50,7 @@ export default class GameMap {
         }
 
         const point = layer.objects.find(obj => obj.name === name);
-        console.log("Found spawn point object:", point); // 👈 See if object is found
+        console.log("Found spawn point object:", point); //  See if object is found
 
         if (!point) {
             console.warn(`Spawn point "${name}" not found in "${layerName}".`);
@@ -89,3 +89,4 @@ export default class GameMap {
 
     }
 }
+

@@ -385,13 +385,6 @@ NEED TO CHANGE IMAGES!
 TASK: WHEN HARVESTING COFFEE PLANTS, GIVE THE PLAYER COFFEE BEANS INSTEAD OF COFFEE SEESD. 
 
 
->>>>>>> eca5a42 (complete restructure and version 0.11 coffee game)
-
-
-
-
-<<<<<<< HEAD
-....................
 
 need to link the plant to the seedID in the database.
 
@@ -404,24 +397,88 @@ bean database
 
 
 shop database????????
-=======
+
+------------------------- 05/05/2025 -----------------------------------------------------
+
+Started learning react through codeacademy.
+
+
+--------------------------08/05/2025------------------------------------------------------
+
+
+Completed React project on codeacademy, hard. 
 
 
 
+------------------------ 09/05/2025 --------------------------------------------------------
+
+
+Revise React
+
+1 hour 30 spent doing the react project tutorial AGAIN
+
+headache...
+
+Things I didnt understand:
+
+for...in loops
+
+When html/jsc is being used...
+
+what to do...
+
+go back and revise html before continuing studies with jsx
+
+Yesterday
+
+
+-----------------------------12/05/2025-----------------------------------------------
 
 
 
+beans are displaying the wrong colour / frame... idk why 
 
->>>>>>> eca5a42 (complete restructure and version 0.11 coffee game)
+FIXED
+
+Adding Npc to sell coffee beans to ...
+
+Starting to think about crafting with coffee beans
+
+--------------------------- 13/05/2025 --------------------------------------------------
+
+HTML LESSON TODAY 
+
+then
+
+website...?
+
+drew coffee shop npc and baskets
+
+want to get the player to place beans in baskets and then the npc will take the beans, brew them and then make coffee and sell them. 
 
 
 
+NEED TO FIX THIS >>>>
+
+2. Avoid Multiple Pointerdown Listeners
+You are using this.input.on('pointerdown', ...) in multiple functions (putCompostInPot, plantSeedInPot, etc.). These listeners will stack every time the scene is restarted unless they’re removed or carefully managed.
+
+Fix:
+
+Use a single pointerdown listener in create() that calls a handler which checks current context:
+
+CODE NO LONGER PLACING POTS
 
 
+--------------------------- 17/05/2025 ------------------------------------------
+
+fixed global image indexes for now..
+
+still lots of bugs.
+
+next thing to do : 
+
+sell coffee beans to coffee stall girl 
 
 
-
-
-
-
-
+working on player overlap with npc and dialogue.

@@ -1,11 +1,12 @@
 class CoffeeBean {
 
-    constructor({name, quality, value, imageKey}){
+    constructor({name, quality, value, imageKey, frame}){
         this.name = name;
         this.type = "bean";
         this.quality = quality; //quality of the bean, used for brewing
         this.value = value; //value of the bean, used for selling   
         this.imageKey = imageKey; //image key for the bean  
+        this.frame = frame;
 
     }
 

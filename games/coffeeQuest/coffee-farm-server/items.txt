@@ -22,7 +22,7 @@ const items = [
     growthTime: 60,
     maxGrowthStage: 6,
     imageKey: 'shopItems',
-    frame: 0 
+    frame: 2
   },
   {
     id: 2,
@@ -31,8 +31,8 @@ const items = [
     value: 1,
     quantity: 0,
     type: 'bean',
-    imageKey: 'shopItems',
-    frame: 0
+    imageKey: 'coffeeBeans',
+    frame: 2
   },
   {
     id: 3, 
@@ -54,8 +54,8 @@ const items = [
     value: 15,
     quantity: 0,
     type: 'bean',
-    imageKey: 'shopItems',
-    frame: 0
+    imageKey: 'coffeeBeans',
+    frame: 1
   },
   {
     id: 5, 
@@ -77,8 +77,8 @@ const items = [
     value: 100,
     quantity: 0,
     type: 'bean',
-    imageKey: 'shopItems',
-    frame: 0
+    imageKey: 'coffeeBeans',
+    frame: 2
   },
   {
     id: 7, 

@@ -91,7 +91,7 @@ export default class Player {
         this.player.setScale(1.4);
         this.player.setSize(10,5);
         this.player.setOffset(12,18);
-        this.player.setDepth(1);
+        this.player.setDepth(5);
 
 
         this.scene.anims.create({
@@ -103,21 +103,21 @@ export default class Player {
     
          this.scene.anims.create({
             key: 'idleUp',
-            frames: this.scene.anims.generateFrameNumbers(this.playerImageKey, { start: 8, end: 8}),
+            frames: this.scene.anims.generateFrameNumbers(this.playerImageKey, { start: 7, end: 7}),
             frameRate: 10,
             repeat: -1
          });
     
          this.scene.anims.create({
             key: 'lookLeftIdle',
-            frames: this.scene.anims.generateFrameNumbers(this.playerImageKey, { start: 6, end: 6}),
+            frames: this.scene.anims.generateFrameNumbers(this.playerImageKey, { start: 22, end: 22}),
             frameRate: 10,
             repeat: -1
          });
     
          this.scene.anims.create({
             key: 'lookRightIdle',
-            frames: this.scene.anims.generateFrameNumbers(this.playerImageKey, { start: 4, end: 4}),
+            frames: this.scene.anims.generateFrameNumbers(this.playerImageKey, { start: 15, end: 15}),
             frameRate: 10,
             repeat: -1
          });
@@ -125,28 +125,28 @@ export default class Player {
     
         this.scene.anims.create({
            key: 'moveRight',
-           frames: this.scene.anims.generateFrameNumbers(this.playerImageKey, { start: 4, end: 5}),
+           frames: this.scene.anims.generateFrameNumbers(this.playerImageKey, { start: 15, end: 19}),
            frameRate: 10,
            repeat: -1
         });
     
         this.scene.anims.create({
             key: 'moveLeft',
-            frames: this.scene.anims.generateFrameNumbers(this.playerImageKey, { start: 6, end: 7}),
+            frames: this.scene.anims.generateFrameNumbers(this.playerImageKey, { start: 22, end: 26}),
             frameRate: 10,
             repeat: -1
          });
     
          this.scene.anims.create({
             key: 'moveUp',
-            frames: this.scene.anims.generateFrameNumbers(this.playerImageKey, { start: 11, end: 12}),
+            frames: this.scene.anims.generateFrameNumbers(this.playerImageKey, { start: 7, end: 11}),
             frameRate: 10,
             repeat: -1
          });
     
          this.scene.anims.create({
             key: 'moveDown',
-            frames: this.scene.anims.generateFrameNumbers(this.playerImageKey, { start: 1, end: 2}),
+            frames: this.scene.anims.generateFrameNumbers(this.playerImageKey, { start: 1, end: 6}),
             frameRate: 10,
             repeat: -1
          });

@@ -15,15 +15,11 @@ export default class Dialogue{
         const charImage = this.scene.add.image(x, y, this.fontImageKey, index)
         .setOrigin(0)
         .setScrollFactor(0);
-        
-
-
         this.drawnChars.push(charImage);
-
       }
       
       drawText(text, x, y) {
-        const spacing = 6; // tile size or desired spacing
+        const spacing = 7; 
         const chars = [];
 
 
@@ -34,7 +30,7 @@ export default class Dialogue{
           const charImage = this.scene.add.image(x + i * spacing, y, this.fontImageKey, index)
           .setOrigin(0)
           .setScrollFactor(0)
-          .setScale(1)
+          .setScale(1.3)
           .setDepth(11);
 
           chars.push(charImage);
@@ -55,7 +51,14 @@ export default class Dialogue{
     }
 
 
+    createDialogueBox(){
 
+      this.dialogBox = this.add.rectangle(400, 550, 600, 100, 0x00000, 0.7).setOrigin(0.5).setVisible(false);
+      this.dialogText = this.add.text(220, 520, '', {
+        fontSize: '16px',
+        wordWrap: { width: 560 }
+      }).setVisible(false);
+    }
 
 
 

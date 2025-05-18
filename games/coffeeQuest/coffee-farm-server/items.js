@@ -32,7 +32,7 @@ const items = [
     quantity: 0,
     type: 'bean',
     imageKey: 'coffeeBeans',
-    frame: 2
+    frame: 0
   },
   {
     id: 3, 
@@ -55,7 +55,7 @@ const items = [
     quantity: 0,
     type: 'bean',
     imageKey: 'coffeeBeans',
-    frame: 10
+    frame: 2
   },
   {
     id: 5, 
@@ -78,7 +78,7 @@ const items = [
     quantity: 0,
     type: 'bean',
     imageKey: 'coffeeBeans',
-    frame: 14
+    frame: 3
   },
   {
     id: 7, 

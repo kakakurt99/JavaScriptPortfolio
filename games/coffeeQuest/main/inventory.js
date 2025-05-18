@@ -28,7 +28,7 @@ class inventory {
 
             this.dialogueFont = new Dialogue(this.scene, 'charSheet');
             this.shop = new Shop();
-            // ✅ CREATE TOOLTIP ON INIT, so it exists for event handlers
+ 
             this.createToolTip(this.scene);
             this.createSelectorImage();
     }
@@ -118,6 +118,7 @@ console.log("this happens...");
             let itemSlot = this.slotDisplayObjects[index];
             if (itemSlot) {
                 console.log(item.imageKey);
+                console.log(`Setting frame for ${item.name}: ${item.frame}`);
 
                 let itemFrame = item.frame ?? 0;
 
