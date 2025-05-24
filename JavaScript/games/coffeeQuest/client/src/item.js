@@ -1,4 +1,4 @@
-import inventory from '../src/inventory.js';
+import inventory from './inventory.js';
 
 class Item {
 

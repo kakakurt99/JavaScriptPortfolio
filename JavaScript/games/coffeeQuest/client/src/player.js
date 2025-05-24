@@ -1,5 +1,5 @@
 import gameState from './gameState.js';
-import GameMap from './GameMap.js';
+import GameMap from './gameMap.js';
 
 
 

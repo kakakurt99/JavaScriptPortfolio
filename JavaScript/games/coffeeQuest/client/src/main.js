@@ -1,14 +1,14 @@
-import Item from '../src/Item.js';
-import Plants from '../src/Plants.js';
+import Item from './item.js';
+import Plants from './plants.js';
 import inventory from '../src/inventory.js';
-import GameMap from '../src/GameMap.js';
-import Player from '../src/Player.js';
+import GameMap from './gameMap.js';
+import Player from './player.js';
 import gameState from '../src/gameState.js';
 import imageIndexes from '../src/imageIndexes.js';
 import globalIndexes from '../src/imageIndexes.js';
-import Dialogue from '../src/Dialogue.js';
-import Shop from '../src/Shop.js';
-import CoffeeBean from '../src/CoffeeBean.js';
+import Dialogue from './dialogue.js';
+import Shop from './shop.js';
+import CoffeeBean from '../coffeeBean.js';
 import { createAnimations } from '../src/animations.js'; 
 
 
