@@ -1,6 +1,6 @@
-import gameState from './gameState.js'
-import Dialogue from './Dialogue.js';
-import Shop from './Shop.js';
+import gameState from '../src/gameState.js'
+import Dialogue from '../src/Dialogue.js';
+import Shop from '../src/Shop.js';
 
 const maxInventory = 10; 
 

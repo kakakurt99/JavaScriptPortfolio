@@ -8,8 +8,6 @@ export default class Npc {
         this.scene = scene;
         this.npcImageKey = npcImageKey;
 
-
-
         this.createNpc(spawnPoint);
         console.log("npc sprite is created at:" + spawnPoint.x, spawnPoint.y);
         scene.add.existing(this.npc);

@@ -1,14 +1,15 @@
-import Item from './Item.js';
-import Plants from './plants.js';
-import inventory from './inventory.js';
-import GameMap from './GameMap.js';
-import Player from './Player.js';
-import gameState from './gameState.js';
-import imageIndexes from './imageIndexes.js';
-import globalIndexes from './imageIndexes.js';
-import Dialogue from './Dialogue.js';
-import Shop from './Shop.js';
-import CoffeeBean from './CoffeeBean.js';
+import Item from '../src/Item.js';
+import Plants from '../src/Plants.js';
+import inventory from '../src/inventory.js';
+import GameMap from '../src/GameMap.js';
+import Player from '../src/Player.js';
+import gameState from '../src/gameState.js';
+import imageIndexes from '../src/imageIndexes.js';
+import globalIndexes from '../src/imageIndexes.js';
+import Dialogue from '../src/Dialogue.js';
+import Shop from '../src/Shop.js';
+import CoffeeBean from '../src/CoffeeBean.js';
+import { createAnimations } from '../src/animations.js'; 
 
 
 
@@ -44,34 +45,40 @@ class main extends Phaser.Scene{
 
 async preload(){
 
-this.load.image("house1", "../assets/map/house1.png");
-this.load.image("groundtiles", "../assets/map/groundtiles.png");
-this.load.image("plants&pots", "../assets/map/plants&pots.png");
-this.load.tilemapTiledJSON("worldMap", "../assets/map/mapNew.json");
+this.load.image("house1", "../src/assets/map/house1.png");
+this.load.image("groundtiles", "../src/assets/map/groundtiles.png");
+this.load.image("plants&pots", "../src/assets/map/plants&pots.png");
+this.load.tilemapTiledJSON("worldMap", "../src/assets/map/mapNew.json");
 
-this.load.spritesheet('charSheet', '../assets/fonts/monogram/bitmap/monogram-bitmap.png', {
+this.load.spritesheet('charSheet', '../src/assets/fonts/monogram/bitmap/monogram-bitmap.png', {
     frameWidth: 6,
     frameHeight: 12,
 });
 
-this.load.json('charMap', '../assets/fonts/monogram/bitmap/monogram-bitmap.json')
-this.load.image("slotImage", "../assets/images/invSlot.png");
-this.load.image("inventoryBox", "../assets/images/inventoryBG.png");
-this.load.spritesheet('shopItems', '../assets/images/coffeebags.png', { frameWidth: 32, frameHeight: 32});
-this.load.spritesheet('coffeeBeans', '../assets/images/coffeebeans.png', { frameWidth: 32, frameHeight: 32});
-this.load.spritesheet('potItems', '../assets/images/basicpot.png', {frameWidth: 16, frameHeight: 16});
-this.load.spritesheet('coffeecups', '../assets/images/coffeecup1.png', {frameWidth: 32, frameHeight: 32});
+this.load.json('charMap', '../src/assets/fonts/monogram/bitmap/monogram-bitmap.json')
+this.load.image("slotImage", "../src/assets/images/invSlot.png");
+this.load.image("inventoryBox", "../src/assets/images/inventoryBG.png");
+this.load.spritesheet('shopItems', '../src/assets/images/coffeebags.png', { frameWidth: 32, frameHeight: 32});
+this.load.spritesheet('coffeeBeans', '../src/assets/images/coffeebeans.png', { frameWidth: 32, frameHeight: 32});
+this.load.spritesheet('potItems', '../src/assets/images/basicpot.png', {frameWidth: 16, frameHeight: 16});
+this.load.spritesheet('coffeecups', '../src/assets/images/coffeecup1.png', {frameWidth: 32, frameHeight: 32});
 
-this.load.image("compostItems", "../assets/images/compostbag.png");
+this.load.image("compostItems", "../src/assets/images/compostbag.png");
 
-this.load.image('coffeeseed', '../assets/images/coffeeSeed.png', { frameWidth: 16, frameHeight: 16});
-this.load.image('coffeebean', '../assets/images/coffeebean.png', { frameWidth: 16, frameHeight: 16});
-this.load.spritesheet("plantStages", "../assets/images/basicplantstages.png", { frameWidth: 16, frameHeight: 16});
-this.load.spritesheet('plantStages2', "../assets/images/basicplantstages2.png", { frameWidth: 16, frameHeight: 32});
+this.load.image('coffeeseed', '../src/assets/images/coffeeSeed.png', { frameWidth: 16, frameHeight: 16});
+this.load.image('coffeebean', '../src/assets/images/coffeebean.png', { frameWidth: 16, frameHeight: 16});
+this.load.spritesheet("plantStages", "../src/assets/images/basicplantstages.png", { frameWidth: 16, frameHeight: 16});
+this.load.spritesheet('plantStages2', "../src/assets/images/basicplantstages2.png", { frameWidth: 16, frameHeight: 32});
 //this.load.spritesheet("playerSprite", "../assets/images/newnpc.png", {frameWidth: 32, frameHeight: 32});
 
-this.load.spritesheet('playerSprite', '../assets/characters/playerCharacterFull.png', { frameWidth: 32, frameHeight: 32});
-this.load.spritesheet('shopNPC1', '../assets/characters/girl3.png', {frameWidth: 32, frameHeight: 32});
+this.load.spritesheet('playerSprite', '../src/assets/characters/playerCharacterFull.png', { frameWidth: 32, frameHeight: 32});
+this.load.spritesheet('shopNPC1', '../src/assets/characters/girl3.png', {frameWidth: 32, frameHeight: 32});
+
+
+this.load.spritesheet('grindingBeansAnim', '../src/assets/animations/beanGrindAnim.png', {
+    frameWidth: 32, 
+    frameHeight: 32
+});
 
 
 }
@@ -84,6 +91,25 @@ gameState.centerY = cam.centerY;
 
 this.myMap = new GameMap(this, "worldMap", "house1", "plants&pots", "groundtiles");
 this.potDataMap = new Map(); // Key: `${x},${y}` -> Value: pot object
+
+
+
+
+
+createAnimations(this);
+this.beanTable = this.add.sprite(350, 335, 'grindingBeansAnim');
+this.beanTable.setDepth(5);
+
+const beansReady = true;
+
+if(beansReady){
+    this.beanTable.play('grindBeans'); 
+    this.beansReady = false;
+    console.log("beansReady = ", this.beansReady);
+}
+
+
+
 
 
 fetch('http://localhost:3000/beans')
@@ -168,6 +194,7 @@ this.input.keyboard.on('keydown-ESC', () => {
 // Enable collision between the player and the buildings
 this.physics.add.collider(this.player.player, this.myMap.buildinglayer);
 this.physics.add.collider(this.player.player, this.myMap.groundlayer);
+this.physics.add.collider(this.player.player, this.myMap.treelayer);
 
 this.physics.add.overlap(
     this.player.player, 
@@ -178,16 +205,42 @@ this.physics.add.overlap(
 );
 
 
-this.tryPlacePotOnClick();
 //this.tryRemovePotOnClick();
 
-this.putCompostInPot();
-this.plantSeedInPot();
+
+
 this.waterPlantWithCup();
 this.fillCupAction();
 this.emptyCupAction();
 this.harvestCrop();
 this.interactWithMocha();
+
+
+
+ this.input.on('pointerdown', (pointer) => {
+        const { tileX, tileY } = this.getTileCoordsFromPointer(pointer);    
+        
+
+        console.log("item in slot =? ", this.myInventory.itemInSlot);
+
+
+        if(this.myInventory.itemInSlot){
+
+        if(this.myInventory.itemInSlot.name === 'Plant Pot (Small)'){
+            this.tryPlacePotOnClick(tileX, tileY);
+        } else if(this.myInventory.itemInSlot.name === 'Compost'){
+            this.putCompostInPot(tileX, tileY);
+        } else if(this.myInventory.itemInSlot.type === 'seed'){
+            console.log("trying to do something with a seed...");
+            this.plantSeedInPot(tileX, tileY);
+        } else if (this.myInventory.itemInSlot.contains === 'water'){
+            this.waterPlantWithCup(tileX, tileY);
+        }
+
+        }
+
+        
+ });
 
 }
 
@@ -226,13 +279,12 @@ update(){
     }
  }
 
-tryPlacePotOnClick(){
-    this.input.on('pointerdown', (pointer) => {
-        const { tileX, tileY } = this.getTileCoordsFromPointer(pointer);    
-        const tileKey = `${tileX},${tileY}`;
+tryPlacePotOnClick(tileX, tileY){
+
+    const tileKey = `${tileX},${tileY}`;
+    
         const groundTile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.groundlayer);
         const plantsTile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.plantslayer);
-        
         // Check if something is already there
         if(plantsTile){
             if(plantsTile.properties.exists){
@@ -240,8 +292,8 @@ tryPlacePotOnClick(){
                 return;
             }
         }
-        // If the tile is empty and we have a basic pot
-        if(!plantsTile && this.myInventory.itemInSlot?.name.includes('Plant Pot')){
+
+
             if(groundTile?.properties?.plantable){
                 console.log("Placing a basic pot.");
      
@@ -265,13 +317,11 @@ tryPlacePotOnClick(){
                 });
                 console.log("Pot data added at", tileKey);
             }
-        }
-    });
+        
+    
 }
 
-putCompostInPot(){
-    this.input.on('pointerdown', (pointer) => {
-        const { tileX, tileY } = this.getTileCoordsFromPointer(pointer);
+putCompostInPot(tileX, tileY){
         
         const groundTile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.groundlayer);
         const plantsTile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.plantslayer);
@@ -306,15 +356,14 @@ putCompostInPot(){
                 }
             } 
         }
-    });
+    
 
 }
 
-plantSeedInPot(){
-    this.input.on('pointerdown', (pointer) => {
-        const { tileX, tileY } = this.getTileCoordsFromPointer(pointer);
-        const tileKey = `${tileX},${tileY}`;
+plantSeedInPot(tileX, tileY){
 
+    console.log("plant seed in pot function running");
+        const tileKey = `${tileX},${tileY}`;
         const tile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.plantslayer);
         const compostPotIndex = this.getGlobalIndexPlants(imageIndexes.PotWithSoil);
         const seededPotIndex = this.getGlobalIndexPlants(imageIndexes.PotWithSeeds);
@@ -342,18 +391,14 @@ plantSeedInPot(){
         }
         }
 
-    });
 }
 
-waterPlantWithCup() {
-    this.input.on('pointerdown', (pointer) => {
-        const { tileX, tileY } = this.getTileCoordsFromPointer(pointer);
+waterPlantWithCup(tileX, tileY) {
         const tileKey = `${tileX},${tileY}`;
 
         const tile = this.myMap.map.getTileAt(tileX, tileY, false, this.myMap.plantslayer);
         const pot = this.potDataMap.get(tileKey);
         const item = this.myInventory.itemInSlot;
-
 
         console.log("item is: ", item);
 
@@ -374,8 +419,6 @@ waterPlantWithCup() {
             console.log("no item in hand");
         }
 
-        
-    });
 }
 
 getTileProperties(tile) {
@@ -425,6 +468,7 @@ startSeedGrowth(tileX, tileY) {
     plantStartingFrame);
     plantSprite.setDepth(10);
     plantSprite.setInteractive();
+
     plantSprite.on('pointerdown', () => {
         const currentGrowth = pot.growthStage;
         const maxGrowth = pot.maxGrowthStage;
@@ -438,7 +482,6 @@ startSeedGrowth(tileX, tileY) {
         }
     });
     // Create a new plant object with the seed's properties
-
     console.log(`Creating a new plant for seed: ${seedInfo.name}`);
     const plant = new Plants(
       seedInfo.name,
@@ -555,6 +598,17 @@ startSeedGrowth(tileX, tileY) {
             } else {
                 console.log("No crops ready for harvest.");
             }
+    }
+}
+
+
+putBeansInBasket(){
+    if(this.myInventory.itemInSlot.contains === 'bean'){
+        //if player clicks on basket index
+        //change basket tile to full basket
+        // remove bean from player invy
+        //start npc anim
+        //npc remove basket. 
     }
 }
 

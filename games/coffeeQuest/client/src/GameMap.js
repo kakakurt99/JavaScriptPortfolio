@@ -29,6 +29,7 @@ export default class GameMap {
         // (Optional) Set depth or enable collision here if needed
         this.buildinglayer.setCollisionByProperty({ collides: true });
         this.groundlayer.setCollisionByProperty({ collides: true });
+        this.treelayer.setCollisionByProperty({ collides: true });
 
 
         this.plantslayer.setDepth(5);

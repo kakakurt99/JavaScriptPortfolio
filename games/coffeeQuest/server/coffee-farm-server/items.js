@@ -1,3 +1,4 @@
+
 const express = require('express');
 const app = express();
 
@@ -156,18 +157,18 @@ const items = [
   }
 ];
 
-// CORS for Phaser game
+
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   next();
 });
 
-// Route to get all items
+// get all items
 app.get('/items', (req, res) => {
   res.json(items);
 });
 
-// Route to get items by type
+// get items by type
 app.get('/items/:type', (req, res) => {
   const { type } = req.params;
   const validTypes = ['seed', 'bean', 'soil', 'pot', 'equipment'];
@@ -182,7 +183,7 @@ app.get('/items/:type', (req, res) => {
 
 
 
-// Route to get all beans (excluding shop visibility)
+// get all beans (excluding shop visibility)
 app.get('/beans', (req, res) => {
   const beans = items.filter(item => item.type === 'bean');
   res.json(beans);
@@ -190,7 +191,7 @@ app.get('/beans', (req, res) => {
 
 
 
-// Grouped item structure (if you want to use this later)
+// grouped item structure
 const grouped = {
   seeds: [],
   beans: [],

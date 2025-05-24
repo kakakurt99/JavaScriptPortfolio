@@ -482,3 +482,21 @@ sell coffee beans to coffee stall girl
 
 
 working on player overlap with npc and dialogue.
+
+
+---------------------------- 19/05/2025 -----------------------------------------
+
+PUT THE BEANS IN THE BASKET ... HOW?
+
+IF BEANS IN hand
+
+CLICK TO PUT IN BASKET?
+
+PROXIMITY CHECK??
+
+BEANS LEAVE INVENTORY
+
+FIXED MULTIPLE POINTER DOWN TO ONE SINGLE INSTANCE, STILL NEED TO SORT SEED
+
+waterplantwithcup function
+startseedgrowth function 

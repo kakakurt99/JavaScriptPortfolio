@@ -1,4 +1,4 @@
-import main from "./main.js";
+import main from "../src/main.js";
 
 const config = {
     type: Phaser.AUTO,
@@ -17,7 +17,7 @@ const config = {
         default: "arcade",
         arcade: {
             gravity: { y: 0 },
-            debug: true
+            debug: false
         }
     },
 
